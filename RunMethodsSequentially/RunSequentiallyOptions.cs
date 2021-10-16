@@ -3,23 +3,26 @@
 
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using RunMethodsSequentially.LockAndRunCode;
 
-namespace RunStartupMethodsSequentially
+namespace RunMethodsSequentially
 {
     public class RunSequentiallyOptions
     {
 
-        public string LockDatabaseName { get; set; } = nameof(LockDatabaseAndRunJob);
+        public string LockName { get; set; } = nameof(RunMethodsSequentially);
 
         public int DefaultLockTimeoutInSeconds { get; set; } = 100;
+
+        public bool RegisterAsHostedService { get; set; } = true;
+
+        public ICollection<TryLockVersion> LockVersionsInOrder { get; } = new List<TryLockVersion>();
 
         public RunSequentiallyOptions(IServiceCollection services)
         {
             Services = services;
         }
 
-        public IServiceCollection Services { get; }
-
-        public ICollection<TryLockVersion> LockVersionsInOrder { get; } = new List<TryLockVersion>();
+        internal IServiceCollection Services { get; }
     }
 }

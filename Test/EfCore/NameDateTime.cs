@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2021 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using System.Threading.Tasks;
+using System;
 
-namespace RunMethodsSequentially
+namespace Test.EfCore
 {
-    public interface IServiceToCallWhileInLock
+    public class NameDateTime
     {
-        ValueTask RunMethodWhileInLockAsync();
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime DateTimeUtc { get; set; }
     }
 }

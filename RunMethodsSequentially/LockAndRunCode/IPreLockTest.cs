@@ -3,10 +3,10 @@
 
 using System.Threading.Tasks;
 
-namespace RunMethodsSequentially
+namespace RunMethodsSequentially.LockAndRunCode
 {
-    public interface IServiceToCallWhileInLock
+    public interface IPreLockTest
     {
-        ValueTask RunMethodWhileInLockAsync();
+        ValueTask<bool> CheckLockResourceExistsAsync();
     }
 }
