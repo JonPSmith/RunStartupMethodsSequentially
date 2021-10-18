@@ -56,4 +56,38 @@ The `options` also has default settings for some of the code, but you can overri
 
 - `options.RegisterAsHostedService`: By default this is true, and the the `IGetLockAndThenRunServices` service isn't registered, but the [GetLockAndThenRunHostedService](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/LockAndRunCode/GetLockAndThenRunHostedService.cs) is registered as a `HostedService`. In ASP.NET Core that means the `IGetLockAndThenRunServices` code is run on startup.
 - `options.DefaultLockTimeoutInSeconds`: By default this is set to 100 seconds, and defines the time it will wait for a lock can be acquired. _NOTE: When you have `NNN` multiple instances the time for the ALL of your startup services must be less that `DefaultLockTimeoutInSeconds / NNN`.
-- `options.GlobalLockName`: This defines the name used for the lock. At this point its not worth changing but future features might 
+
+## `RegisterServiceToRunInJob<T>` extension method
+
+The `RegisterServiceToRunInJob<T>` extension method is used to register your _startup services_ that you want to run on startup. Examples of startup services you might like to write are:
+
+- Migrate/Create your database
+- Migrate/Create your individual user account database
+- Ensure that a admin user is added to your individual user account database
+- Seed your own database
+
+There are two rules about your startup services:
+
+1. They must inherit the [`IServiceToCallWhileInLock`](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/IServiceToCallWhileInLock.cs).
+2. You must register your startup services in the correct order of running, e.g. you should add your Migrate/Create your database startup service before any startup services that access that database.
+
+### An example startup service
+
+Here is an example of a startup service that will migrate a database using Entity Framework Core, with a `DbContext` called `TestDbContext`.
+
+```c#
+public class MigrateDbContextService : IServiceToCallWhileInLock
+{
+    private readonly TestDbContext _context;
+
+    public MigrateDbContextService(TestDbContext context)
+    {
+        _context = context;
+    }
+
+    public async ValueTask RunMethodWhileInLockAsync()
+    {
+        await _context.Database.MigrateAsync();
+    }
+}
+```
