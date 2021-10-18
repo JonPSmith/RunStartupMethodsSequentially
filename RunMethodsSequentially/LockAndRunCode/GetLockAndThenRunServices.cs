@@ -23,7 +23,7 @@ namespace RunMethodsSequentially.LockAndRunCode
         /// If no resource is found, then it throws an exception
         /// </summary>
         /// <returns></returns>
-        public async Task LockAndLoadAsync()
+        public async Task<bool> LockAndLoadAsync()
         {
             using var scope = _serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
@@ -39,7 +39,7 @@ namespace RunMethodsSequentially.LockAndRunCode
                 {
                     //The resource to lock on is there, so lock and run the methods and exit
                     await lockVersion.LockAndRunClass.LockAndRunMethodsAsync(scopedServices);
-                    return;
+                    return true;
                 }
                 //else resource wasn't available so try another lock version
             }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using RunMethodsSequentially;
 using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
+using Test.Helpers;
 using Test.ServicesToCall;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
@@ -82,7 +83,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = SetupRunMethodsSequentially(context, 
+            var lockAndRun = context.SetupRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
 
             //ATTEMPT
@@ -104,7 +105,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = SetupRunMethodsSequentially(context,
+            var lockAndRun = context.SetupRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
@@ -131,7 +132,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = SetupRunMethodsSequentially(context,
+            var lockAndRun = context.SetupRunMethodsSequentially(
                 options =>
                 {
                     options.AddFileSystemLockAndRunMethods(TestData.GetTestDataDir());
@@ -161,7 +162,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = SetupRunMethodsSequentially(context,
+            var lockAndRun = context.SetupRunMethodsSequentially(
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
 
             //ATTEMPT
@@ -180,7 +181,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = SetupRunMethodsSequentially(context);
+            var lockAndRun = context.SetupRunMethodsSequentially();
 
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
@@ -198,7 +199,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = SetupRunMethodsSequentially(context,
+            var lockAndRun = context.SetupRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
@@ -239,22 +240,6 @@ namespace Test.UnitTests
         //--------------------------------------------------------------
         //private method
 
-        private static IGetLockAndThenRunServices SetupRunMethodsSequentially(TestDbContext context,
-            Action<RunSequentiallyOptions> optionsAction = null)
-        {
-            var services = new ServiceCollection();
-            services.AddDbContext<TestDbContext>(dbOptions =>
-                dbOptions.UseSqlServer(context.Database.GetConnectionString()));
-            var options = services.RegisterRunMethodsSequentially(options =>
-            {
-                options.RegisterAsHostedService = false;
-                options.AddSqlServerLockAndRunMethods(context.Database.GetConnectionString());
-            });
-            optionsAction?.Invoke(options);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
-            return lockAndRun;
-        }
     }
 }

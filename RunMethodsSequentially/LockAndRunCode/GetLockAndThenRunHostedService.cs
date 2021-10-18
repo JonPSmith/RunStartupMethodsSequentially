@@ -19,7 +19,7 @@ namespace RunMethodsSequentially.LockAndRunCode
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _service.LockAndLoadAsync();
+            var success = await _service.LockAndLoadAsync();
         }
 
         /// <summary>

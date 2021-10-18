@@ -12,7 +12,7 @@ namespace RunMethodsSequentially.LockAndRunCode
         /// If the resource does exist it calls the code to lock and run the methods.
         /// If no resource is found, then it throws an exception
         /// </summary>
-        /// <returns></returns>
-        Task LockAndLoadAsync();
+        /// <returns>return true if successful</returns>
+        Task<bool> LockAndLoadAsync();
     }
 }
