@@ -145,7 +145,7 @@ namespace Test.UnitTests
                 using var localContext = new TestDbContext(dbOptions);
                 var lockAndRun = localContext.SetupRunMethodsSequentially(
                     options => options.RegisterServiceToRunInJob<UpdateWithDelay>());
-                var success = await lockAndRun.LockAndLoadAsync();
+                await lockAndRun.LockAndLoadAsync();
             }
 
             //ATTEMPT
@@ -163,5 +163,36 @@ namespace Test.UnitTests
                 (entities[i].DateTimeUtc >= entities[i - 1].DateTimeUtc).ShouldBeTrue(i.ToString());
             }
         }
+
+        [Fact]
+        public async Task TestLockSqlDatabase_Timeout()
+        {
+            //SETUP
+            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            using var context = new TestDbContext(dbOptions);
+            context.Database.EnsureClean();
+
+            context.Add(new CommonNameDateTime { Name = "start", DateTimeUtc = DateTime.UtcNow });
+            await context.SaveChangesAsync();
+
+            async Task TaskAsync(int i1)
+            {
+                var lockAndRun = context.SetupRunMethodsSequentially(options =>
+                {
+                    options.DefaultLockTimeoutInSeconds = 1;
+                    options.RegisterServiceToRunInJob<UpdateThatTakes800Milliseconds1>();
+                    options.RegisterServiceToRunInJob<UpdateThatTakes800Milliseconds2>();
+                });
+                await lockAndRun.LockAndLoadAsync();
+            }
+
+            //ATTEMPT
+            var ex = await Assert.ThrowsAsync<TimeoutException>(async () => await 3.NumTimesAsyncEnumerable().AsyncParallelForEach(TaskAsync));
+
+            //VERIFY
+            _output.WriteLine(ex.Message);
+            ex.Message.ShouldEqual("Timeout exceeded when trying to acquire the lock");
+        }
+
     }
 }

@@ -27,7 +27,7 @@ namespace RunMethodsSequentially.LockAndRunCode
         {
             using var scope = serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
-            var distributedLock = new SqlDistributedLock(_options.LockName, _connectionString);
+            var distributedLock = new SqlDistributedLock(_options.GlobalLockName, _connectionString);
             await using (await distributedLock.AcquireAsync(
                 TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
             {

@@ -30,7 +30,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             using var scope = serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
             var lockFileDirectory = new DirectoryInfo(_directoryFilePath);
-            var distributedLock = new FileDistributedLock(lockFileDirectory, _options.LockName);
+            var distributedLock = new FileDistributedLock(lockFileDirectory, _options.GlobalLockName);
             await using (await distributedLock.AcquireAsync(
                 TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
             {
