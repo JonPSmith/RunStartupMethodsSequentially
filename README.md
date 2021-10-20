@@ -52,11 +52,11 @@ There are three LockAndRun methods (and its not hard to create others):
 
 _NOTE: It is fairly easy to add other LockAndRun methods as long as the [DistributedLock](https://github.com/madelson/DistributedLock) has a lock version for a global lock available to your application._
 
-The reason for having the FileSystem lock is to handle the situation where the database doesn't currently exist. For example, if the database lock can't be applied because there is no database, then the library will look that the next LockAndRun method (if available) to obtain a lock. By adding a second FileSystem LockAndRun method that can obtain a lock, then the library can still obtain a lock.
+The reason for having a series of LockAndRun methods is to allow for resources that might not created yet. For instance, if the database doesn't currently exist, then it can't obtain a lock on the database. In this case the second FileSystem LockAndRun method can obtain a lock on a FileSystem directory that all the applications can access. 
 
-The first LockAndRun method that obtains a global lock will then run all your startup services you have registered to RunMethodsSequentially (see `RegisterServiceToRunInJob<T>` section later).
+The first LockAndRun method that obtains a global lock will then run all your startup services you have registered to RunMethodsSequentially (see `RegisterServiceToRunInJob<T>` section later). Once the your startup services have run on one application instance it is on, then it releases the global lock, which allows another instance of the application to run until all the instances have been run.
 
-Once the your startup services have run on the application instance it is on, then it releases the global lock. This allows another instance of the application to run, until all the instances have been run.
+Of course, once one instance has successfully applied your startup services to the global resource, then other instances are still going to run. That is why your startup services must check if the update they are planning to add haven't already been applied.
 
 #### Extra options
 
