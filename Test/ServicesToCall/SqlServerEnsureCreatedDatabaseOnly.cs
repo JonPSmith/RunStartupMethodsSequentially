@@ -2,24 +2,23 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using RunMethodsSequentially;
 using Test.EfCore;
 
 namespace Test.ServicesToCall
 {
-    public class MigrateDbContextService : IServiceToCallWhileInLock
+    public class SqlServerEnsureCreatedDatabaseOnly : IServiceToCallWhileInLock
     {
         private readonly TestDbContext _context;
 
-        public MigrateDbContextService(TestDbContext context)
+        public SqlServerEnsureCreatedDatabaseOnly(TestDbContext context)
         {
             _context = context;
         }
 
         public async ValueTask RunMethodWhileInLockAsync()
         {
-            await _context.Database.MigrateAsync();
+            await _context.Database.EnsureCreatedAsync();
         }
     }
 }

@@ -19,11 +19,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests
 {
-    public class TestSqlServerLocks
+    public class TestPostGreSqlLocks
     {
         private readonly ITestOutputHelper _output;
 
-        public TestSqlServerLocks(ITestOutputHelper output)
+        public TestPostGreSqlLocks(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -32,13 +32,13 @@ namespace Test.UnitTests
         public void TestRegisterRunMethodsSequentiallyHostedService()
         {
             //SETUP
-            var connectionString = this.GetUniqueDatabaseConnectionString();
+            var connectionString = this.GetUniquePostGreSqlDatabaseConnectionString();
             var services = new ServiceCollection();
 
             //ATTEMPT
             services.RegisterRunMethodsSequentially(options =>
             {
-                options.AddSqlServerLockAndRunMethods(connectionString);
+                options.AddPostGreSqlLockAndRunMethods(connectionString);
             });
 
             //VERIFY
@@ -46,7 +46,7 @@ namespace Test.UnitTests
             var options = serviceProvider.GetRequiredService<RunSequentiallyOptions>();
             options.LockVersionsInOrder.Count.ShouldEqual(1);
             options.LockVersionsInOrder.Single().LockAndRunClass.ResourceName.ShouldEqual(
-                $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]");
+                $"PostGreSQL database with name [{connectionString.GetDatabaseNameFromPostGreSqlConnectionString()}]");
             serviceProvider.GetService<IHostedService>().ShouldNotBeNull();
         }
 
@@ -54,14 +54,14 @@ namespace Test.UnitTests
         public void TestRegisterRunMethodsSequentiallyNormalService()
         {
             //SETUP
-            var connectionString = this.GetUniqueDatabaseConnectionString();
+            var connectionString = this.GetUniquePostGreSqlDatabaseConnectionString();
             var services = new ServiceCollection();
 
             //ATTEMPT
             services.RegisterRunMethodsSequentially(options =>
             {
                 options.RegisterAsHostedService = false;
-                options.AddSqlServerLockAndRunMethods(connectionString);
+                options.AddPostGreSqlLockAndRunMethods(connectionString);
             });
 
             //VERIFY
@@ -69,19 +69,19 @@ namespace Test.UnitTests
             var options = serviceProvider.GetRequiredService<RunSequentiallyOptions>();
             options.LockVersionsInOrder.Count.ShouldEqual(1);
             options.LockVersionsInOrder.Single().LockAndRunClass.ResourceName.ShouldEqual(
-                $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]");
+                $"PostGreSQL database with name [{connectionString.GetDatabaseNameFromPostGreSqlConnectionString()}]");
             serviceProvider.GetService<IGetLockAndThenRunServices>().ShouldNotBeNull();
         }
 
         [Fact]
-        public async Task TestLockSqlDatabaseAndRunOneService()
+        public async Task TestLockPostGreDatabaseAndRunOneService()
         {
             //SETUP
-            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            var dbOptions = this.CreatePostGreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.Database.EnsureClean();
+            context.ClearCreatedAndEmpty();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially( 
+            var lockAndRun = context.SetupPostGreSqlRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
 
             //ATTEMPT
@@ -89,21 +89,21 @@ namespace Test.UnitTests
 
             //VERIFY
             var entry = context.NameDateTimes.Single();
-            entry.DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddMilliseconds(-500), DateTime.UtcNow);
+            entry.DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddSeconds(-5), DateTime.UtcNow);
             entry.Name.ShouldEqual(nameof(UpdateDatabase1));
             var common = context.CommonNameDateTimes.Single();
             common.DateTimeUtc.ShouldEqual(entry.DateTimeUtc);
         }
 
         [Fact]
-        public async Task TestLockSqlDatabaseAndRunTwoServices()
+        public async Task TestLockPostGreDatabaseAndRunTwoServices()
         {
             //SETUP
-            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            var dbOptions = this.CreatePostGreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.Database.EnsureClean();
+            context.ClearCreatedAndEmpty();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var lockAndRun = context.SetupPostGreSqlRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
@@ -116,21 +116,21 @@ namespace Test.UnitTests
             //VERIFY
             var utcNow = DateTime.UtcNow;
             var entries = context.NameDateTimes.OrderBy(x => x.Id).ToList();
-            entries[0].DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddMilliseconds(-500), utcNow);
+            entries[0].DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddSeconds(-5), utcNow);
             entries[1].DateTimeUtc.ShouldBeInRange(entries[0].DateTimeUtc, utcNow);
             var common = context.CommonNameDateTimes.Single();
             common.DateTimeUtc.ShouldEqual(entries[1].DateTimeUtc);
         }
 
         [Fact]
-        public async Task TestLockSqlDatabaseNoDatabaseToStartWith()
+        public async Task TestLockPostGreDatabaseNoDatabaseToStartWith()
         {
             //SETUP
-            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            var dbOptions = this.CreatePostGreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var lockAndRun = context.SetupPostGreSqlRunMethodsSequentially(
                 options =>
                 {
                     options.AddFileSystemLockAndRunMethods(TestData.GetTestDataDir());
@@ -143,7 +143,7 @@ namespace Test.UnitTests
 
             //VERIFY
             var entry = context.NameDateTimes.Single();
-            entry.DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddMilliseconds(-500), DateTime.UtcNow);
+            entry.DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddSeconds(-5), DateTime.UtcNow);
             entry.Name.ShouldEqual(nameof(UpdateDatabase1));
             var common = context.CommonNameDateTimes.Single();
             common.DateTimeUtc.ShouldEqual(entry.DateTimeUtc);
@@ -153,14 +153,14 @@ namespace Test.UnitTests
         //Check errors
 
         [Fact]
-        public async Task TestLockSqlDatabase_NoDatabase()
+        public async Task TestLockPostGreDatabase_NoDatabase()
         {
             //SETUP
-            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            var dbOptions = this.CreatePostGreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var lockAndRun = context.SetupPostGreSqlRunMethodsSequentially(
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
 
             //ATTEMPT
@@ -172,14 +172,14 @@ namespace Test.UnitTests
         }
 
         [Fact]
-        public async Task TestLockSqlDatabase_NoServicesFound()
+        public async Task TestLockPostGreDatabase_NoServicesFound()
         {
             //SETUP
-            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            var dbOptions = this.CreatePostGreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.Database.EnsureClean();
+            context.ClearCreatedAndEmpty();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially();
+            var lockAndRun = context.SetupPostGreSqlRunMethodsSequentially();
 
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
@@ -190,14 +190,14 @@ namespace Test.UnitTests
         }
 
         [Fact]
-        public async Task TestLockSqlDatabase_DuplicateServices()
+        public async Task TestLockPostGreDatabase_DuplicateServices()
         {
             //SETUP
-            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            var dbOptions = this.CreatePostGreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.Database.EnsureClean();
+            context.ClearCreatedAndEmpty();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var lockAndRun = context.SetupPostGreSqlRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
@@ -214,7 +214,7 @@ namespace Test.UnitTests
         }
 
         [Fact]
-        public async Task TestLockSqlDatabase_NoRegisteredLockService()
+        public async Task TestLockPostGreDatabase_NoRegisteredLockService()
         {
             //SETUP
             var services = new ServiceCollection();
@@ -233,11 +233,5 @@ namespace Test.UnitTests
             _output.WriteLine(ex.Message);
             ex.Message.ShouldStartWith("You must register at least one lock service when registering");
         }
-
-
-        //--------------------------------------------------------------
-        //private method
-
-
     }
 }

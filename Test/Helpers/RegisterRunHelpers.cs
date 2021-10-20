@@ -13,17 +13,34 @@ namespace Test.Helpers
 {
     public static class RegisterRunHelpers
     {
-        public static IGetLockAndThenRunServices SetupRunMethodsSequentially(this TestDbContext context,
+        public static IGetLockAndThenRunServices SetupSqlServerRunMethodsSequentially(this TestDbContext context,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
             var services = new ServiceCollection();
-            services.AddLogging(config => config.AddConsole());
             services.AddDbContext<TestDbContext>(dbOptions =>
                 dbOptions.UseSqlServer(context.Database.GetConnectionString()));
             var options = services.RegisterRunMethodsSequentially(options =>
             {
                 options.RegisterAsHostedService = false;
                 options.AddSqlServerLockAndRunMethods(context.Database.GetConnectionString());
+            });
+            optionsAction?.Invoke(options);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
+            return lockAndRun;
+        }
+
+        public static IGetLockAndThenRunServices SetupPostGreSqlRunMethodsSequentially(this TestDbContext context,
+            Action<RunSequentiallyOptions> optionsAction = null)
+        {
+            var services = new ServiceCollection();
+            services.AddDbContext<TestDbContext>(dbOptions =>
+                dbOptions.UseNpgsql(context.Database.GetConnectionString()));
+            var options = services.RegisterRunMethodsSequentially(options =>
+            {
+                options.RegisterAsHostedService = false;
+                options.AddPostGreSqlLockAndRunMethods(context.Database.GetConnectionString());
             });
             optionsAction?.Invoke(options);
 

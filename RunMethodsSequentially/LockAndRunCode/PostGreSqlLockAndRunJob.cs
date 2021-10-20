@@ -3,37 +3,36 @@
 
 using System;
 using System.Threading.Tasks;
-using Medallion.Threading.SqlServer;
+using Medallion.Threading.Postgres;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
-    public class SqlServerLockAndRunJob : ILockAndRunJob
+    public class PostGreSqlLockAndRunJob : ILockAndRunJob
     {
         private readonly string _connectionString;
         private readonly RunSequentiallyOptions _options;
 
         public string ResourceName { get; }
 
-        public SqlServerLockAndRunJob(RunSequentiallyOptions options, string connectionString)
+        public PostGreSqlLockAndRunJob(RunSequentiallyOptions options, string connectionString)
         {
             _options = options;
             _connectionString = connectionString;
 
-            ResourceName = $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]";
+            ResourceName = $"PostGreSQL database with name [{connectionString.GetDatabaseNameFromPostGreSqlConnectionString()}]";
         }
 
         public async Task LockAndRunMethodsAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
-            var distributedLock = new SqlDistributedLock(_options.GlobalLockName, _connectionString);
+            var distributedLock = new PostgresDistributedLock(new PostgresAdvisoryLockKey(_options.GlobalLockName, allowHashing: true), _connectionString);
             await using (await distributedLock.AcquireAsync(
                 TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
             {
                 await scopedServices.RunJobAsync();
             }
-
         }
     }
 }

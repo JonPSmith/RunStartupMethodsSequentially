@@ -1,6 +1,6 @@
 # RunStartupMethodsSequentially
 
-This .NET library is designed to handle updates to single resources, e.g. a Database, on startup of an application that has multiple instances running (e.g. a ASP.NET Core web site with _Azure Scale Out_ is turned on). This library runs when the application starts up and run your _startup services_. Typical startup services are: migrating to a database, seeding a database and/or ensuring that an admin user has been added. It can also be used with non-database resources as Azure blob, common files, etc.
+This .NET library is designed to handle updates to single resources, e.g. a database, on startup of an application that has multiple instances running (e.g. a ASP.NET Core web site with _Azure Scale Out_ is turned on). This library runs when the application starts up and run your _startup services_. Typical startup services are: migrating to a database, seeding a database and/or ensuring that an admin user has been added. It can also be used with non-database resources as Azure blob, common files, etc.
 
 > **Scale Out**: A scale out operation is the equivalent of creating multiple copies of your web site and adding a load balancer to distribute the demand  between them (taken from [Microsoft Azure docs](https://azure.microsoft.com/en-gb/blog/scaling-up-and-scaling-out-in-windows-azure-web-sites/)).
 
@@ -44,11 +44,19 @@ The following subsections describe each part:
 
 This method allows you to register one or more _LockAndRun_ methods. Each LockAndRun method first checks that the provided resource type exists. If the resource isn't found, then it exits and allows later LockAndRun methods to try to get a lock on a resource. If no resource can be found to create a global lock, the it will throw an exception.
 
-_NOTE: This approach is used to handle the situation where the database doesn't currently exist. So, if the lock based on the database fails because there is no database, then the second LockAndRun method can use another approach to gain a lock, e.g. using a FileSystem lock on a Directory._
+There are three LockAndRun methods (and its not hard to create others):
 
-The first LockAndRun method that found its resource will obtain a global lock and the run all your startup services you have registered with RunMethodsSequentially.
+- `AddSqlServerLockAndRunMethods(connectionString)`, which works with a SQL Server database
+- `AddPostGreSqlLockAndRunMethods(connectionString)`, which is for a PostGreSQL database
+- `AddFileSystemLockAndRunMethods(- path to global directory -)`, which uses a FileSystem directory shared across all of the application's instances.
 
-Once the your startup services have run on the application instance it on, then it releases the global lock. This allows another instance of the application to run, until all the instances have run.
+_NOTE: It is fairly easy to add other LockAndRun methods as long as the [DistributedLock](https://github.com/madelson/DistributedLock) has a lock version for a global lock available to your application._
+
+The reason for having the FileSystem lock is to handle the situation where the database doesn't currently exist. For example, if the database lock can't be applied because there is no database, then the library will look that the next LockAndRun method (if available) to obtain a lock. By adding a second FileSystem LockAndRun method that can obtain a lock, then the library can still obtain a lock.
+
+The first LockAndRun method that obtains a global lock will then run all your startup services you have registered to RunMethodsSequentially (see `RegisterServiceToRunInJob<T>` section later).
+
+Once the your startup services have run on the application instance it is on, then it releases the global lock. This allows another instance of the application to run, until all the instances have been run.
 
 #### Extra options
 
@@ -94,4 +102,4 @@ public class MigrateDbContextService : IServiceToCallWhileInLock
 }
 ```
 
-Because your startup services are register with the .NET dependency injection provider you can inject any other services into your startup service.
+Because your startup services are register with the .NET dependency injection provider you can inject any other services into your startup service, in the example above it obtains the application's DbContext.

@@ -143,7 +143,7 @@ namespace Test.UnitTests
             async Task TaskAsync(int i1)
             {
                 using var localContext = new TestDbContext(dbOptions);
-                var lockAndRun = localContext.SetupRunMethodsSequentially(
+                var lockAndRun = localContext.SetupSqlServerRunMethodsSequentially(
                     options => options.RegisterServiceToRunInJob<UpdateWithDelay>());
                 await lockAndRun.LockAndLoadAsync();
             }
@@ -177,7 +177,7 @@ namespace Test.UnitTests
 
             async Task TaskAsync(int i1)
             {
-                var lockAndRun = context.SetupRunMethodsSequentially(options =>
+                var lockAndRun = context.SetupSqlServerRunMethodsSequentially(options =>
                 {
                     options.DefaultLockTimeoutInSeconds = 1;
                     options.RegisterServiceToRunInJob<UpdateThatTakes800Milliseconds1>();
