@@ -16,7 +16,7 @@ namespace Test.Helpers
             string optionalMethodName = null, char separator = '_')
             where TContext : DbContext
         {
-            var connectionString = testClass.GetUniqueDatabaseConnectionString(optionalMethodName, separator);
+            var connectionString = testClass.GetUniquePostGreSqlDatabaseConnectionString(optionalMethodName, separator);
 
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();
             optionsBuilder.UseNpgsql(connectionString);
