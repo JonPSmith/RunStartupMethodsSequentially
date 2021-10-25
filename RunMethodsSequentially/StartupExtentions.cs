@@ -34,14 +34,14 @@ namespace RunMethodsSequentially
                 new SqlServerLockAndRunJob(options, connectionString)));
         }
 
-        public static void AddPostGreSqlLockAndRunMethods(this RunSequentiallyOptions options,
+        public static void AddPostgreSqlLockAndRunMethods(this RunSequentiallyOptions options,
             string connectionString)
         {
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
             options.LockVersionsInOrder.Add(new TryLockVersion(
-                new PostGreSqlDoesDatabaseExist(connectionString),
-                new PostGreSqlLockAndRunJob(options, connectionString)));
+                new PostgreSqlDoesDatabaseExist(connectionString),
+                new PostgreSqlLockAndRunJob(options, connectionString)));
         }
 
         public static void AddFileSystemLockAndRunMethods(this RunSequentiallyOptions options,

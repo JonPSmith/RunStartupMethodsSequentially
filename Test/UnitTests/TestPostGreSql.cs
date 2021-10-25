@@ -12,11 +12,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests
 {
-    public class TestPostGreSql
+    public class TestPostgreSql
     {
         private readonly ITestOutputHelper _output;
 
-        public TestPostGreSql(ITestOutputHelper output)
+        public TestPostgreSql(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -43,7 +43,7 @@ namespace Test.UnitTests
             using var context = new TestDbContext(options);
             context.Database.EnsureDeleted();
 
-            var service = new PostGreSqlDoesDatabaseExist(context.Database.GetConnectionString());
+            var service = new PostgreSqlDoesDatabaseExist(context.Database.GetConnectionString());
 
             //ATTEMPT
             var noDb = await service.CheckLockResourceExistsAsync();

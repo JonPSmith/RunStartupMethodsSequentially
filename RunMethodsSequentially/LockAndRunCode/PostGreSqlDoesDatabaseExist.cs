@@ -6,11 +6,11 @@ using Npgsql;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
-    public class PostGreSqlDoesDatabaseExist : IPreLockTest
+    public class PostgreSqlDoesDatabaseExist : IPreLockTest
     {
         private readonly string _connectionString;
 
-        public PostGreSqlDoesDatabaseExist(string connectionString)
+        public PostgreSqlDoesDatabaseExist(string connectionString)
         {
             _connectionString = connectionString;
         }

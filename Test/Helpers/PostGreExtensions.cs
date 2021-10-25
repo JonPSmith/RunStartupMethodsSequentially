@@ -10,7 +10,7 @@ using TestSupport.Helpers;
 
 namespace Test.Helpers
 {
-    public static class PostGreExtensions
+    public static class PostgreExtensions
     {
         public static DbContextOptions<TContext> CreatePostGreUniqueDatabaseOptions<TContext>(this object testClass, 
             string optionalMethodName = null, char separator = '_')

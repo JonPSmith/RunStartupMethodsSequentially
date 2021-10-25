@@ -19,11 +19,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests
 {
-    public class TestPostGreSqlLocks
+    public class TestPostgreSqlLocks
     {
         private readonly ITestOutputHelper _output;
 
-        public TestPostGreSqlLocks(ITestOutputHelper output)
+        public TestPostgreSqlLocks(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -38,7 +38,7 @@ namespace Test.UnitTests
             //ATTEMPT
             services.RegisterRunMethodsSequentially(options =>
             {
-                options.AddPostGreSqlLockAndRunMethods(connectionString);
+                options.AddPostgreSqlLockAndRunMethods(connectionString);
             });
 
             //VERIFY
@@ -61,7 +61,7 @@ namespace Test.UnitTests
             services.RegisterRunMethodsSequentially(options =>
             {
                 options.RegisterAsHostedService = false;
-                options.AddPostGreSqlLockAndRunMethods(connectionString);
+                options.AddPostgreSqlLockAndRunMethods(connectionString);
             });
 
             //VERIFY

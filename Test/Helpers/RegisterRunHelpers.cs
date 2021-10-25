@@ -40,7 +40,7 @@ namespace Test.Helpers
             var options = services.RegisterRunMethodsSequentially(options =>
             {
                 options.RegisterAsHostedService = false;
-                options.AddPostGreSqlLockAndRunMethods(context.Database.GetConnectionString());
+                options.AddPostgreSqlLockAndRunMethods(context.Database.GetConnectionString());
             });
             optionsAction?.Invoke(options);
 

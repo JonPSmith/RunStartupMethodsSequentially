@@ -8,14 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
-    public class PostGreSqlLockAndRunJob : ILockAndRunJob
+    public class PostgreSqlLockAndRunJob : ILockAndRunJob
     {
         private readonly string _connectionString;
         private readonly RunSequentiallyOptions _options;
 
         public string ResourceName { get; }
 
-        public PostGreSqlLockAndRunJob(RunSequentiallyOptions options, string connectionString)
+        public PostgreSqlLockAndRunJob(RunSequentiallyOptions options, string connectionString)
         {
             _options = options;
             _connectionString = connectionString;
