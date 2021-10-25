@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using Respawn;
 using Test.EfCore;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
@@ -65,15 +67,24 @@ namespace Test.Helpers
             return builder.ToString();
         }
 
-        public static void ClearCreatedAndEmpty(this TestDbContext context)
+        static Checkpoint EmptyCheckpoint = new Checkpoint
         {
-            context.Database.EnsureCreated();
+            DbAdapter = DbAdapter.Postgres
+        };
 
-            context.RemoveRange(context.CommonNameDateTimes);
-            context.RemoveRange(context.NameDateTimes);
-            context.SaveChanges();
-
-            context.ChangeTracker.Clear();
+        public async static Task EnsureCreatedAndEmptyPostgreSql<TContext>(this TestDbContext context)
+            where TContext : DbContext
+        {
+            if(!context.Database.EnsureCreated())
+            {
+                //Already created, so wipe it using respwan
+                var connectionString = context.Database.GetConnectionString();
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    await conn.OpenAsync();
+                    await EmptyCheckpoint.Reset(conn);
+                }
+            };
         }
 
 

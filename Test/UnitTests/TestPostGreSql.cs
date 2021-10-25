@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using Respawn;
 using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
 using Test.Helpers;
@@ -39,7 +41,7 @@ namespace Test.UnitTests
         }
 
         [Fact]
-        public async Task TestDeleteCreateDatabase()
+        public async Task TestDeleteCreateDatabaseEfCore()
         {
             //SETUP
             var logs = new List<string>();
@@ -59,6 +61,27 @@ namespace Test.UnitTests
             //VERIFY
             noDb.ShouldBeFalse();
             hasDb.ShouldBeTrue();
+        }
+
+
+        [Fact]
+        public async Task TestResetDatabaseUsingRespawn()
+        {
+            //SETUP
+            var options = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            using var context = new TestDbContext(options);
+            context.Database.EnsureCreated();
+
+            context.Add(new NameDateTime { Name = "test" });
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+
+            //ATTEMPT
+            using (new TimeThings(_output, "wipe database using respawn"))
+                await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
+
+            //VERIFY
+            (await context.NameDateTimes.CountAsync()).ShouldEqual(0);
         }
 
         [Fact]

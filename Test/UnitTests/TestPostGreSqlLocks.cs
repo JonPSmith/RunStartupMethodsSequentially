@@ -79,7 +79,7 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.ClearCreatedAndEmpty();
+            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
@@ -101,7 +101,7 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.ClearCreatedAndEmpty();
+            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>
@@ -177,7 +177,7 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.ClearCreatedAndEmpty();
+            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially();
 
@@ -195,7 +195,7 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            context.ClearCreatedAndEmpty();
+            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>
