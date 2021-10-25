@@ -47,7 +47,7 @@ This method allows you to register one or more _LockAndRun_ methods. Each LockAn
 There are three LockAndRun methods (and its not hard to create others):
 
 - `AddSqlServerLockAndRunMethods(connectionString)`, which works with a SQL Server database
-- `AddPostGreSqlLockAndRunMethods(connectionString)`, which is for a PostGreSQL database
+- `AddPostgreSqlLockAndRunMethods(connectionString)`, which is for a PostGreSQL database
 - `AddFileSystemLockAndRunMethods(- path to global directory -)`, which uses a FileSystem directory shared across all of the application's instances.
 
 _NOTE: It is fairly easy to add other LockAndRun methods as long as the [DistributedLock](https://github.com/madelson/DistributedLock) has a lock version for a global lock available to your application._

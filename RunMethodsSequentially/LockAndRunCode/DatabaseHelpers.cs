@@ -14,7 +14,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             return builder.InitialCatalog;
         }
 
-        public static string GetDatabaseNameFromPostGreSqlConnectionString(this string connectionString)
+        public static string GetDatabaseNameFromPostgreSqlConnectionString(this string connectionString)
         {
             var builder = new NpgsqlConnectionStringBuilder(connectionString);
             return builder.Database;

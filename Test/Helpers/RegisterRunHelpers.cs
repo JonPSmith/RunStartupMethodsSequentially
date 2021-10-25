@@ -31,7 +31,7 @@ namespace Test.Helpers
             return lockAndRun;
         }
 
-        public static IGetLockAndThenRunServices SetupPostGreSqlRunMethodsSequentially(this TestDbContext context,
+        public static IGetLockAndThenRunServices SetupPostgreSqlRunMethodsSequentially(this TestDbContext context,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
             var services = new ServiceCollection();

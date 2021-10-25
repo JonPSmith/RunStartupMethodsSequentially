@@ -20,7 +20,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             _options = options;
             _connectionString = connectionString;
 
-            ResourceName = $"PostGreSQL database with name [{connectionString.GetDatabaseNameFromPostGreSqlConnectionString()}]";
+            ResourceName = $"PostgreSQL database with name [{connectionString.GetDatabaseNameFromPostgreSqlConnectionString()}]";
         }
 
         public async Task LockAndRunMethodsAsync(IServiceProvider serviceProvider)
