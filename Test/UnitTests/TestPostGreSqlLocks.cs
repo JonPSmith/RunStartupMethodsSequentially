@@ -32,7 +32,7 @@ namespace Test.UnitTests
         public void TestRegisterRunMethodsSequentiallyHostedService()
         {
             //SETUP
-            var connectionString = this.GetUniquePostgreSqlDatabaseConnectionString();
+            var connectionString = this.GetUniquePostgreSqlConnectionString();
             var services = new ServiceCollection();
 
             //ATTEMPT
@@ -54,7 +54,7 @@ namespace Test.UnitTests
         public void TestRegisterRunMethodsSequentiallyNormalService()
         {
             //SETUP
-            var connectionString = this.GetUniquePostgreSqlDatabaseConnectionString();
+            var connectionString = this.GetUniquePostgreSqlConnectionString();
             var services = new ServiceCollection();
 
             //ATTEMPT
@@ -77,9 +77,9 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabaseAndRunOneService()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
+            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
@@ -99,9 +99,9 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabaseAndRunTwoServices()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
+            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>
@@ -126,7 +126,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabaseNoDatabaseToStartWith()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
@@ -156,7 +156,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabase_NoDatabase()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
@@ -175,9 +175,9 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabase_NoServicesFound()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
+            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially();
 
@@ -193,9 +193,9 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabase_DuplicateServices()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
+            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
             var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>

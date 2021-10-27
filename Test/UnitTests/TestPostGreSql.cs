@@ -11,6 +11,7 @@ using Test.EfCore;
 using Test.Helpers;
 using TestSupport.Attributes;
 using TestSupport.EfHelpers;
+using TestSupport.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
@@ -30,7 +31,7 @@ namespace Test.UnitTests
         public void TestCreatePostgreUniqueDatabaseOptions()
         {
             //SETUP
-            var options = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var options = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(options);
 
             //ATTEMPT
@@ -45,7 +46,7 @@ namespace Test.UnitTests
         {
             //SETUP
             var logs = new List<string>();
-            var options = this.CreatePostgreUniqueDatabaseOptionsWithLogging<TestDbContext>(log => logs.Add(log));
+            var options = this.CreatePostgreSqlUniqueClassOptionsWithLogTo<TestDbContext>(log => logs.Add(log));
             using var context = new TestDbContext(options);
             using(new TimeThings(_output, "Possible delete db"))
                 context.Database.EnsureDeleted();
@@ -68,7 +69,7 @@ namespace Test.UnitTests
         public async Task TestResetDatabaseUsingRespawn()
         {
             //SETUP
-            var options = this.CreatePostgreUniqueDatabaseOptions<TestDbContext>();
+            var options = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
             using var context = new TestDbContext(options);
             context.Database.EnsureCreated();
 
@@ -78,26 +79,10 @@ namespace Test.UnitTests
 
             //ATTEMPT
             using (new TimeThings(_output, "wipe database using respawn"))
-                await context.EnsureCreatedAndEmptyPostgreSql<TestDbContext>();
+                await context.EnsureCreatedAndEmptyPostgreSqlAsync();
 
             //VERIFY
             (await context.NameDateTimes.CountAsync()).ShouldEqual(0);
-        }
-
-        [Fact]
-        public void TestGetAllPostgreUnitTestDatabases()
-        {
-            //SETUP
-            var connectionString = this.GetUniquePostgreSqlDatabaseConnectionString();
-
-            //ATTEMPT
-            var databaseNames = connectionString.GetAllPostgreUnitTestDatabases();
-
-            //VERIFY
-            foreach(var databaseName in databaseNames)
-            {
-                _output.WriteLine(databaseName);
-            }
         }
 
         [RunnableInDebugOnly]
@@ -108,7 +93,7 @@ namespace Test.UnitTests
             //ATTEMPT
             using (new TimeThings(_output, "Deleted dbs"))
             {
-                var numDeleted = PostgreExtensions.DeleteAllUnitTestDatabases();
+                var numDeleted = PostgreSqlHelpers.DeleteAllPostgreSqlUnitTestDatabases();
                 _output.WriteLine($"Deleted {numDeleted} dbs");
             }
 
