@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+      <TargetFramework>net6.0</TargetFramework>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,10 +10,33 @@
     <PackageReference Include="DistributedLock.FileSystem" Version="1.0.0" />
     <PackageReference Include="DistributedLock.Postgres" Version="1.0.1" />
     <PackageReference Include="DistributedLock.SqlServer" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Npgsql" Version="5.0.10" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="Npgsql" Version="6.0.0" />
   </ItemGroup>
+
+	<PropertyGroup>
+		<PackageId>Net.RunMethodsSequentially</PackageId>
+		<PackageVersion>1.0.0</PackageVersion>
+		<Authors>Jon P Smith</Authors>
+		<Description>Runs updates to single resources, e.g. a database, on startup of an application that has multiple instances</Description>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>
+			- First release: Supports SQL Server and PostgreSQL (other databases available)
+		</PackageReleaseNotes>
+		<Copyright>Copyright (c) 2021 Jon P Smith. Licenced under MIT licence</Copyright>
+		<PackageTags>Entity Framework Core, ASP.NET Core</PackageTags>
+		<IsPackable>true</IsPackable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<ProjectUrl>https://github.com/JonPSmith/RunStartupMethodsSequentially</ProjectUrl>
+		<RepositoryUrl>https://github.com/JonPSmith/RunStartupMethodsSequentially</RepositoryUrl>
+		<PackageIcon>RunMethodsSequentiallyNuGetIcon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="RunMethodsSequentiallyNuGetIcon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>

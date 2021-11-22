@@ -2,4 +2,4 @@
 
 ## 1.0.0
 
-- First version
+- First release: Supports SQL Server and PostgreSQL (other databases available)

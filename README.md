@@ -1,10 +1,10 @@
 # RunStartupMethodsSequentially
 
-This .NET library is designed to handle updates to single resources, e.g. a database, on startup of an application that has multiple instances running (e.g. a ASP.NET Core web site with _Azure Scale Out_ is turned on). This library runs when the application starts up and run your _startup services_. Typical startup services are: migrating to a database, seeding a database and/or ensuring that an admin user has been added. It can also be used with non-database resources as Azure blob, common files, etc.
+This .NET library is designed to updates to single resources, e.g. a database, on startup of an application that has multiple instances running (e.g. a ASP.NET Core web site with _Azure Scale Out_ is turned on). This library runs when the application starts up and run your _startup services_. Typical startup services are: migrating to a database, seeding a database and/or ensuring that an admin user has been added. It can also be used with non-database resources as Azure blob, common files, etc.
 
 > **Scale Out**: A scale out operation is the equivalent of creating multiple copies of your web site and adding a load balancer to distribute the demand  between them (taken from [Microsoft Azure docs](https://azure.microsoft.com/en-gb/blog/scaling-up-and-scaling-out-in-windows-azure-web-sites/)).
 
-This open-source library available on NuGet (!!! not yet). The documentation can be found in this README file and see the [Release notes](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/ReleaseNotes.md) for details of changes.
+This open-source library available on NuGet as [Net.RunMethodsSequentially](https://www.nuget.org/packages/Net.RunMethodsSequentially). The documentation can be found in the README file and see the [Release notes](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/ReleaseNotes.md) for details of changes.
 
 ## How it works, and what to watch out for
 

@@ -77,7 +77,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabaseAndRunOneService()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
@@ -99,7 +99,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabaseAndRunTwoServices()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
@@ -126,7 +126,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabaseNoDatabaseToStartWith()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
@@ -156,7 +156,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabase_NoDatabase()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
@@ -175,7 +175,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabase_NoServicesFound()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 
@@ -193,7 +193,7 @@ namespace Test.UnitTests
         public async Task TestLockPostgreDatabase_DuplicateServices()
         {
             //SETUP
-            var dbOptions = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
 

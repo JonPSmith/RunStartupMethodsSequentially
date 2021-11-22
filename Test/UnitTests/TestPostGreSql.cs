@@ -31,14 +31,14 @@ namespace Test.UnitTests
         public void TestCreatePostgreUniqueDatabaseOptions()
         {
             //SETUP
-            var options = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
+            var options = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(options);
 
             //ATTEMPT
             var connectionString = context.Database.GetConnectionString();
 
             //VERIFY
-            connectionString.ShouldEqual("Host=localhost;Database=DatabaseTest_TestPostgreSql;Username=postgres;Password=LetMeIn");
+            connectionString.ShouldEqual("Host=127.0.0.1;Database=DatabaseTest_TestPostgreSql;Username=postgres;Password=LetMeIn");
         }
 
         [Fact]
@@ -64,27 +64,6 @@ namespace Test.UnitTests
             hasDb.ShouldBeTrue();
         }
 
-
-        [Fact]
-        public async Task TestResetDatabaseUsingRespawn()
-        {
-            //SETUP
-            var options = this.CreatePostgreSqlUniqueDatabaseOptions<TestDbContext>();
-            using var context = new TestDbContext(options);
-            context.Database.EnsureCreated();
-
-            context.Add(new NameDateTime { Name = "test" });
-            context.SaveChanges();
-            context.ChangeTracker.Clear();
-
-            //ATTEMPT
-            using (new TimeThings(_output, "wipe database using respawn"))
-                await context.EnsureCreatedAndEmptyPostgreSqlAsync();
-
-            //VERIFY
-            (await context.NameDateTimes.CountAsync()).ShouldEqual(0);
-        }
-
         [RunnableInDebugOnly]
         public void TestDeleteAllTestDatabases()
         {
@@ -93,7 +72,7 @@ namespace Test.UnitTests
             //ATTEMPT
             using (new TimeThings(_output, "Deleted dbs"))
             {
-                var numDeleted = PostgreSqlHelpers.DeleteAllPostgreSqlUnitTestDatabases();
+                var numDeleted = DatabaseTidyHelper.DeleteAllPostgreSqlTestDatabases();
                 _output.WriteLine($"Deleted {numDeleted} dbs");
             }
 
