@@ -27,7 +27,13 @@ namespace RunMethodsSequentially.LockAndRunCode
                 throw new RunSequentiallyException(
                     $"Some of your services registered by {nameof(StartupExtensions.RegisterServiceToRunInJob)}<T> extension method are duplicates. They are: "+
                     string.Join(", ", duplicates.Select(x => x.Key.Name)));
-            foreach (var serviceToRun in servicesToRun)
+
+            //This orders the services using the WhatOrderToRunInAttribute to define the order
+            //If services have the same OrderNum, then they are run in the order that they were registered with the DI
+            var orderedServicesToRun = servicesToRun.OrderBy(service => ((WhatOrderToRunInAttribute)Attribute.GetCustomAttribute(
+                                           service.GetType(), typeof(WhatOrderToRunInAttribute)))?.OrderNum ?? 0);
+
+            foreach (var serviceToRun in orderedServicesToRun)
             {
                 await serviceToRun.RunMethodWhileInLockAsync();
             }

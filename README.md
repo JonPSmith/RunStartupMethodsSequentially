@@ -68,7 +68,7 @@ services.RegisterRunMethodsSequentially(options =>
 .RegisterServiceToRunInJob<SeedDatabaseOnStartup>();
 ```
 
-You then need to run the `IGetLockAndThenRunServices` transient service and call its `LockAndLoadAsync` method. 
+You then need to run the `IGetLockAndThenRunServices` transient service and call its `LockAndLoadAsync` method.
 
 ## Explanation of the various methods
 
@@ -111,13 +111,23 @@ The `RegisterServiceToRunInJob<T>` extension method is used to register your _st
 There are two rules about your startup services:
 
 1. They must inherit the [`IServiceToCallWhileInLock`](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/IServiceToCallWhileInLock.cs) interface.
-2. You must register your startup services in the correct order of running, e.g. you should add your Migrate/Create your database startup service before any startup services that access that database.
+2. Your startup services most likely have to be run in a certain order, for instance you should Migrate/Create your database startup service before any startup services that access that database. You have two options:
+   1. The simplest approach is you register your services in the correct order using the `RegisterServiceToRunInJob<T>` method.
+   2. If you have a complex situation (like the one in my [`AuthPermissions.AspNetCore`](https://github.com/JonPSmith/AuthPermissions.AspNetCore) library) then you can add the  `WhatOrderToRunIn` attribute to your class, which defines a `OrderNum`. The rules for ordering are shown below:
+
+The rules when using the `WhatOrderToRunIn` attribute
+
+1. **Negative OrderNum**: are run before services without an `WhatOrderToRunIn` attribute starting with the lowest.
+2. **No OrderNum attribute**: services without a `WhatOrderToRunIn` attribute are considered to have a OrderNum of zero.
+3. **Positive OrderNum**: are run after the service without without an `WhatOrderToRunIn` attribute starting with the lowest
+4. For services that have the same OrderNum are run in the order that they are defined to the DI provider.
 
 ### An example startup service
 
-Here is an example of a startup service that will migrate a database using Entity Framework Core, with a `DbContext` called `TestDbContext`.
+Here is an example of a startup service that will migrate a database using Entity Framework Core, with a `DbContext` called `TestDbContext`. Because your startup services are register with the .NET dependency injection provider you can inject any other services into your startup service, in the example above it obtains the application's DbContext.
 
 ```c#
+[WhatOrderToRunIn(-1)]
 public class MigrateDbContextService : IServiceToCallWhileInLock
 {
     private readonly TestDbContext _context;
@@ -136,4 +146,6 @@ public class MigrateDbContextService : IServiceToCallWhileInLock
 }
 ```
 
-Because your startup services are register with the .NET dependency injection provider you can inject any other services into your startup service, in the example above it obtains the application's DbContext.
+_NOTE: The `WhatOrderToRunIn` attribute is optional. In this case having the attribute with a `OrderNum` or -1 means this service will be run before other services that don't have a `WhatOrderToRunIn` attribute._
+
+

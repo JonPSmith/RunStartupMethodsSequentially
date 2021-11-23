@@ -5,8 +5,15 @@ using System.Threading.Tasks;
 
 namespace RunMethodsSequentially
 {
+    /// <summary>
+    /// This defines the service that you want run within a locked state
+    /// </summary>
     public interface IServiceToCallWhileInLock
     {
+        /// <summary>
+        /// This method will be called within a lock state
+        /// </summary>
+        /// <returns></returns>
         ValueTask RunMethodWhileInLockAsync();
     }
 }

@@ -85,7 +85,8 @@ namespace Test.UnitTests
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
 
             //ATTEMPT
-            await lockAndRun.LockAndLoadAsync();
+            using(new TimeThings(_output))
+                await lockAndRun.LockAndLoadAsync();
 
             //VERIFY
             var entry = context.NameDateTimes.Single();
@@ -120,6 +121,31 @@ namespace Test.UnitTests
             entries[1].DateTimeUtc.ShouldBeInRange(entries[0].DateTimeUtc, utcNow);
             var common = context.CommonNameDateTimes.Single();
             common.DateTimeUtc.ShouldEqual(entries[1].DateTimeUtc);
+        }
+
+
+        [Fact]
+        public async Task TestLockSqlDatabaseAndRunOrderedByWhatOrderToRunIn()
+        {
+            //SETUP
+            var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
+            using var context = new TestDbContext(dbOptions);
+            context.Database.EnsureClean();
+
+            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+                options =>
+                {
+                    options.RegisterServiceToRunInJob<UpdateWithPositiveOrderNum>();
+                    options.RegisterServiceToRunInJob<UpdateWithNoOrderNum>();
+                    options.RegisterServiceToRunInJob<UpdateWithNegativeOrderNum>();
+                });
+
+            //ATTEMPT
+            await lockAndRun.LockAndLoadAsync();
+
+            //VERIFY
+            var entries = context.NameDateTimes.OrderBy(x => x.Id).ToList();
+            entries.Select(x => x.Name).ShouldEqual(new[] { "OrderNum = -1", "No OrderNum", "OrderNum = +1" });
         }
 
         [Fact]
