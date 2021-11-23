@@ -30,49 +30,45 @@ A typical configuration setup for the RunMethodsSequentially feature depends on 
 
 ### For ASP.NET Core
 
-You most likely want to get the database connection string via the configuration held in the appsettings.json file and an known folder, either the environment `ContentRootPath` or `WebRootPath`. The code below show how you do this.
+You most likely want to get the database connection string held in the appsettings.json file using the `IConfiguration` service and an known folder, either the `IWebHostEnvironment`'s  `ContentRootPath` or `WebRootPath`. The code below shows how to do this in the net6.0 `Program` class
 
 ```c#
-public class Startup
-{
-    private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _env;
+using RunMethodsSequentially;
 
-    public Startup(IConfiguration configuration, IWebHostEnvironment env)
-    {
-        _configuration = configuration;
-        _env = env;
-    }
+var connectionString = builder.Configuration
+    .GetConnectionString("DefaultConnection");
+var lockFolder = builder.Environment.WebRootPath;
 
-    public void ConfigureServices(IServiceCollection services)
+builder.Services.RegisterRunMethodsSequentially(options =>
     {
-        //... other configuration code left out
-        var connectionString =_configuration
-            .GetConnectionString("DefaultConnection");
-        services.RegisterRunMethodsSequentially(options =>
-        {
-            options.AddSqlServerLockAndRunMethods(connectionString));
-            options.AddFileSystemLockAndRunMethods(
-                _env.WebRootPath);
-        })
-        .RegisterServiceToRunInJob<MigrateDatabaseOnStartup>()
-        .RegisterServiceToRunInJob<SeedDatabaseOnStartup>();
-    }
+        options.AddSqlServerLockAndRunMethods(connectionString));
+        options.AddFileSystemLockAndRunMethods(lockFolder);
+    })
+    .RegisterServiceToRunInJob<MigrateDatabaseOnStartup>()
+    .RegisterServiceToRunInJob<SeedDatabaseOnStartup>();
+
+//... other setup code left out
 ```
 
 ### For non-ASP.NET Core applications
 
 For applications where you don't have access to the  you will need to rely on a constant for your connectionString and static methods such as `AppContext.BaseDirectory` or `Environment.CurrentDirectory` to get a folder.
 
+Also, you need to set the `RegisterAsHostedService`, which will register
+as a `IGetLockAndThenRunServices` transient service instead of the the ASP.NET Core specific `HostedService`.
+
 ```c#
 services.RegisterRunMethodsSequentially(options =>
     {
+        options.RegisterAsHostedService = false;
         options.AddSqlServerLockAndRunMethods(connectionString));
         options.AddFileSystemLockAndRunMethods(Environment.CurrentDirectory);
     })
 .RegisterServiceToRunInJob<MigrateDatabaseOnStartup>()
 .RegisterServiceToRunInJob<SeedDatabaseOnStartup>();
 ```
+
+You then need to run the `IGetLockAndThenRunServices` transient service and call its `LockAndLoadAsync` method. 
 
 ## Explanation of the various methods
 
