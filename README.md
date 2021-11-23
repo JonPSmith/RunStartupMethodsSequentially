@@ -26,7 +26,43 @@ If you are working with ASP.NET Core, then that is all you need to do. If you ar
 
 ## Configuring RunMethodsSequentially in ASP.NET Core
 
-A typical configuration setup for the RunMethodsSequentially feature would look like this:
+A typical configuration setup for the RunMethodsSequentially feature depends on what your application is:
+
+### For ASP.NET Core
+
+You most likely want to get the database connection string via the configuration held in the appsettings.json file and an known folder, either the environment `ContentRootPath` or `WebRootPath`. The code below show how you do this in 
+
+```c#
+public class Startup
+{
+    private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _env;
+
+    public Startup(IConfiguration configuration, IWebHostEnvironment env)
+    {
+        _configuration = configuration;
+        _env = env;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        //... other configuration code left out
+        var connectionString =_configuration
+            .GetConnectionString("DefaultConnection");
+        services.RegisterRunMethodsSequentially(options =>
+        {
+            options.AddSqlServerLockAndRunMethods(connectionString));
+            options.AddFileSystemLockAndRunMethods(
+                _env.WebRootPath);
+        })
+        .RegisterServiceToRunInJob<MigrateDatabaseOnStartup>()
+        .RegisterServiceToRunInJob<SeedDatabaseOnStartup>();
+    }
+```
+
+### For non-ASP.NET Core applications
+
+For applications where you don't have access to the  you will need to rely on a constant for your connectionString and static methods such as `AppContext.BaseDirectory` or `Environment.CurrentDirectory` to get a folder.
 
 ```c#
 services.RegisterRunMethodsSequentially(options =>
@@ -37,6 +73,8 @@ services.RegisterRunMethodsSequentially(options =>
 .RegisterServiceToRunInJob<MigrateDatabaseOnStartup>()
 .RegisterServiceToRunInJob<SeedDatabaseOnStartup>();
 ```
+
+## Explanation of the various methods
 
 The following subsections describe each part:
 
