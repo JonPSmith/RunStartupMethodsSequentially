@@ -30,7 +30,7 @@ A typical configuration setup for the RunMethodsSequentially feature depends on 
 
 ### For ASP.NET Core
 
-You most likely want to get the database connection string via the configuration held in the appsettings.json file and an known folder, either the environment `ContentRootPath` or `WebRootPath`. The code below show how you do this in 
+You most likely want to get the database connection string via the configuration held in the appsettings.json file and an known folder, either the environment `ContentRootPath` or `WebRootPath`. The code below show how you do this.
 
 ```c#
 public class Startup
