@@ -8,9 +8,9 @@ This open-source library available on NuGet as [Net.RunMethodsSequentially](http
 
 ## How it works, and what to watch out for
 
-This library allows you create services known as _startup services_ which are run sequentially on startup within a [DistributedLock](https://github.com/madelson/DistributedLock) global lock. This global lock stops the problem of multiple instances of the application trying to update one common resource at the same time. For instance  EF Core's Migrate feature doesn't work if multiple migrations are applied at the same time.
+This library allows you create services known as _startup services_ which are run sequentially on startup within a [DistributedLock](https://github.com/madelson/DistributedLock) global lock. This global lock stops the problem of multiple instances of the application trying to update one common resource at the same time. For instance EF Core's Migrate feature doesn't work if multiple migrations are applied at the same time.
 
-But be aware every startup service will be run on every application's instances, which means your startup services should check if the database has already been updated, e.g. if your service adds an admin user to the the authentication database it should first check that that admin user isn't already been added.
+But be aware every startup service will be run on every application's instances, for example if your application is running four instances then your startup service will be run four times. This means your startup services should check if the database has already been updated, e.g. if your service adds an admin user to the the authentication database it should first check that that admin user isn't already been added (NOTE: EF Core's `Migrate` method checks if the database needs to be updated, which stops your database being migrated multiple times).
 
 Another warning is that applying a database migration is that the migration must not contain what are known as _breaking changes_ - that is a change that will cause a the currently running application from working (see [the five-stage app update in this article](https://www.thereformedprogrammer.net/handling-entity-framework-core-database-migrations-in-production-part-2/) for more info). This issue isn't specific to this library, but applies whenever you are updating an application without any break in the service, known as _24/7_ or _continuous_ application.
 
@@ -147,5 +147,21 @@ public class MigrateDbContextService : IServiceToCallWhileInLock
 ```
 
 _NOTE: The `WhatOrderToRunIn` attribute is optional. In this case having the attribute with a `OrderNum` or -1 means this service will be run before other services that don't have a `WhatOrderToRunIn` attribute._
+
+EF Core's `MigrateAsync` automatically checks if the database needs to be updated, but if you are seeding a database then you need to provide the check that the seeded hasn't already done. Here is a example of adding a admin user to the individual account authentication database, which checks if the admin user hasn't already been added - see test in line 2.
+
+```c#
+var user = await userManager.FindByEmailAsync(email);
+if (user != null)
+    return;
+
+user = new TIdentityUser { UserName = email, Email = email };
+var result = await userManager.CreateAsync(user, password);
+if (!result.Succeeded)
+{
+    throw new InvalidOperationException(
+        $"Tried to add user {email}, but failed.")
+}
+```
 
 
