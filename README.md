@@ -80,13 +80,14 @@ The following subsections describe each part:
 
 This method allows you to register one or more _LockAndRun_ methods. Each LockAndRun method first checks that the provided resource type exists. If the resource isn't found, then it exits and allows later LockAndRun methods to try to get a lock on a resource. If no resource can be found to create a global lock, the it will throw an exception.
 
-There are three LockAndRun methods (and its not hard to create others):
+There are four LockAndRun methods (and its not hard to create others):
 
 - `AddSqlServerLockAndRunMethods(connectionString)`, which works with a SQL Server database
 - `AddPostgreSqlLockAndRunMethods(connectionString)`, which is for a PostGreSQL database
 - `AddFileSystemLockAndRunMethods(- path to global directory -)`, which uses a FileSystem directory shared across all of the application's instances.
+- `AddRunMethodsWithoutLock()` which doesn't lock anything and just runs your startup services. This gives you a way to turn off the lock if you don't have multiple instances (locking a local SQL Server database takes 1 ms, but no lock only takes 50 us.)
 
-_NOTE: It is fairly easy to add another LockAndRun methods as long as the [DistributedLock](https://github.com/madelson/DistributedLock) has a lock version for a global lock available to your application. So if you want to lock on Redis, Azure blob etc. then you can write the extra lock code yourself._
+_NOTE: It is fairly easy to add another LockAndRun methods as long as the [DistributedLock](https://github.com/madelson/DistributedLock) has a lock version for a global lock available to your application. So if you want to lock on Redis, Azure blob etc. then you can write the extra lock code yourself - just follow the pattern of the existing LockAndRun code._
 
 The reason for having a series of LockAndRun methods is to allow for resources that might not created yet. For instance, if the database doesn't currently exist, then it can't obtain a lock on the database. In this case the second FileSystem LockAndRun method can obtain a lock on a FileSystem directory that all the applications can access. 
 
@@ -100,7 +101,7 @@ The `options` also has default settings for some of the code, but you can overri
 
 - `options.RegisterAsHostedService`: By default this is true, and the the `IGetLockAndThenRunServices` service isn't registered, but the [GetLockAndThenRunHostedService](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/LockAndRunCode/GetLockAndThenRunHostedService.cs) is registered as a `HostedService`. In ASP.NET Core that means the `IGetLockAndThenRunServices` code is run on startup.
 - `options.DefaultLockTimeoutInSeconds`: By default this is set to 100 seconds, and defines the time it will wait for a lock can be acquired. _NOTE: When you have `NNN` multiple instances the time for the ALL of your startup services must be less that `DefaultLockTimeoutInSeconds / NNN`.
-- There are other settings - see [RunSequentiallyOptions]https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/RunSequentiallyOptions.cs) for full details.
+- There are other settings - see [RunSequentiallyOptions](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/RunSequentiallyOptions.cs) for full details.
 
 ## Creating your startup services
 
