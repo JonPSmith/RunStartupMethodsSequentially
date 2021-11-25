@@ -16,7 +16,7 @@ namespace RunMethodsSequentially.LockAndRunCode
         /// <param name="scopedServices">NOTE: This is provided as a scopedServices</param>
         public static async Task RunJobAsync(this IServiceProvider scopedServices)
         {
-            var servicesToRun = scopedServices.GetServices<IServiceToCallWhileInLock>().ToArray();
+            var servicesToRun = scopedServices.GetServices<IStartupServiceToRunSequentially>().ToArray();
             if (!servicesToRun.Any())
                 throw new RunSequentiallyException(
                     "You have not registered any services to run when the lock is active. " +
@@ -28,14 +28,10 @@ namespace RunMethodsSequentially.LockAndRunCode
                     $"Some of your services registered by {nameof(StartupExtensions.RegisterServiceToRunInJob)}<T> extension method are duplicates. They are: "+
                     string.Join(", ", duplicates.Select(x => x.Key.Name)));
 
-            //This orders the services using the WhatOrderToRunInAttribute to define the order
-            //If services have the same OrderNum, then they are run in the order that they were registered with the DI
-            var orderedServicesToRun = servicesToRun.OrderBy(service => ((WhatOrderToRunInAttribute)Attribute.GetCustomAttribute(
-                                           service.GetType(), typeof(WhatOrderToRunInAttribute)))?.OrderNum ?? 0);
-
-            foreach (var serviceToRun in orderedServicesToRun)
+            //This orders the startup services by their OrderNum and then execute them
+            foreach (var serviceToRun in servicesToRun.OrderBy(service => service.OrderNum))
             {
-                await serviceToRun.RunMethodWhileInLockAsync();
+                await serviceToRun.ApplyYourChangeAsync(scopedServices);
             }
         }
     }

@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This the DistributedLock SQL Server to lock on a global SQL Server database available to all instances of the application
+    /// </summary>
     public class SqlServerLockAndRunJob : ILockAndRunJob
     {
         private readonly string _connectionString;

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
-    /// <summary>
-    /// This defines the code that checks that the global resource you want to lock exists
-    /// </summary>
-    public interface IPreLockTest
+    public class NoLockPreLockTest : IPreLockTest
     {
-        ValueTask<bool> CheckLockResourceExistsAsync();
+        public ValueTask<bool> CheckLockResourceExistsAsync()
+        {
+            return new ValueTask<bool>(true);
+        }
     }
 }

@@ -6,6 +6,9 @@ using Microsoft.Data.SqlClient;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This checks that a SQL Server database defined in its connection string exists
+    /// </summary>
     public class SqlServerDoesDatabaseExist : IPreLockTest
     {
         private readonly string _connectionString;

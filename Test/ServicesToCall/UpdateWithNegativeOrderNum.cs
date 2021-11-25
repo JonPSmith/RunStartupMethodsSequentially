@@ -3,26 +3,22 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using RunMethodsSequentially;
 using Test.EfCore;
 
 namespace Test.ServicesToCall
 {
-    [WhatOrderToRunIn(-1)]
-    public class UpdateWithNegativeOrderNum : IServiceToCallWhileInLock
+    public class UpdateWithNegativeOrderNum : IStartupServiceToRunSequentially
     {
-        private readonly TestDbContext _context;
+        public int OrderNum { get; } = -1;
 
-        public UpdateWithNegativeOrderNum(TestDbContext context)
+        public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
         {
-            _context = context;
+            var context = scopedServices.GetRequiredService<TestDbContext>();
 
-        }
-
-        public async ValueTask RunMethodWhileInLockAsync()
-        {
-            _context.Add(new NameDateTime { Name = $"OrderNum = -1", DateTimeUtc = DateTime.UtcNow });
-            await _context.SaveChangesAsync();
+            context.Add(new NameDateTime { Name = $"OrderNum = -1", DateTimeUtc = DateTime.UtcNow });
+            await context.SaveChangesAsync();
         }
     }
 }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This checks that the given filepath leads to a FileSystem directory
+    /// </summary>
     public class FileSystemDoesDirectoryExist : IPreLockTest
     {
         private readonly string _directoryFilePath;

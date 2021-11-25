@@ -9,15 +9,22 @@ using Test.EfCore;
 
 namespace Test.ServicesToCall
 {
-    public class UpdateWithPositiveOrderNum : IStartupServiceToRunSequentially
+    public class UpdateWithZeroOrderNum : IStartupServiceToRunSequentially
     {
-        public int OrderNum { get; } = 1;
+        private readonly TestDbContext context;
+
+        public UpdateWithZeroOrderNum(TestDbContext context)
+        {
+            context = context;
+        }
+
+        public int OrderNum { get; }
 
         public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
         {
             var context = scopedServices.GetRequiredService<TestDbContext>();
 
-            context.Add(new NameDateTime { Name = $"OrderNum = +1", DateTimeUtc = DateTime.UtcNow });
+            context.Add(new NameDateTime { Name = $"No OrderNum", DateTimeUtc = DateTime.UtcNow });
             await context.SaveChangesAsync();
         }
     }

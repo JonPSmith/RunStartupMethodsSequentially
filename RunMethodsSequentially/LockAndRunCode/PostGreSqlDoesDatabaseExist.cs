@@ -6,6 +6,9 @@ using Npgsql;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This checks that a PostgreSQL database defined in its connection string exists
+    /// </summary>
     public class PostgreSqlDoesDatabaseExist : IPreLockTest
     {
         private readonly string _connectionString;

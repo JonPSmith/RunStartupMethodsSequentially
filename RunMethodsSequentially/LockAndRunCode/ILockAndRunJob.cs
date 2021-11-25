@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This defines the code that will try to lock with the global resource
+    /// and if the lock is successful it will then run your registered startup services within that lock
+    /// </summary>
     public interface ILockAndRunJob
     {
         /// <summary>

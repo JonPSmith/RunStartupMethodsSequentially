@@ -29,6 +29,32 @@ namespace Test.UnitTests
         }
 
         [Fact]
+        public void ExampleRegisterRunMethodsSequentially()
+        {
+            //SETUP
+            var connectionString = this.GetUniqueDatabaseConnectionString();
+            var services = new ServiceCollection();
+
+            //ATTEMPT
+            services.RegisterRunMethodsSequentially(options =>
+            {
+                options.AddSqlServerLockAndRunMethods(connectionString);
+                options.AddFileSystemLockAndRunMethods(TestData.GetTestDataDir());
+            }).RegisterServiceToRunInJob<UpdateDatabase1>()
+            .RegisterServiceToRunInJob<UpdateDatabase2>();
+
+            //VERIFY
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetRequiredService<RunSequentiallyOptions>();
+            options.LockVersionsInOrder.Count.ShouldEqual(2);
+            options.LockVersionsInOrder.First().LockAndRunClass.ResourceName.ShouldEqual(
+                $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]");
+            options.LockVersionsInOrder.Last().LockAndRunClass.ResourceName.ShouldEqual(
+                @"Looking for directory at C:\Users\JonPSmith\source\repos\RunStartupMethodsSequentially\Test\TestData");
+            serviceProvider.GetService<IHostedService>().ShouldNotBeNull();
+        }
+
+        [Fact]
         public void TestRegisterRunMethodsSequentiallyHostedService()
         {
             //SETUP
@@ -136,7 +162,7 @@ namespace Test.UnitTests
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateWithPositiveOrderNum>();
-                    options.RegisterServiceToRunInJob<UpdateWithNoOrderNum>();
+                    options.RegisterServiceToRunInJob<UpdateWithZeroOrderNum>();
                     options.RegisterServiceToRunInJob<UpdateWithNegativeOrderNum>();
                 });
 

@@ -9,7 +9,7 @@ using Test.EfCore;
 
 namespace Test.ServicesToCall
 {
-    public class UpdateDatabase2 : IServiceToCallWhileInLock
+    public class UpdateDatabase2 : IStartupServiceToRunSequentially
     {
         private readonly TestDbContext _context;
 
@@ -17,8 +17,9 @@ namespace Test.ServicesToCall
         {
             _context = context;
         }
+        public int OrderNum { get; }
 
-        public async ValueTask RunMethodWhileInLockAsync()
+        public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
         {
             var startTime = DateTime.UtcNow;
             //add a new entry

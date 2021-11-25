@@ -4,34 +4,31 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RunMethodsSequentially;
 using Test.EfCore;
 
 namespace Test.ServicesToCall
 {
-    public class UpdateWithDelay : IServiceToCallWhileInLock
+    public class UpdateWithDelay : IStartupServiceToRunSequentially
     {
-        private readonly TestDbContext _context;
+        public int OrderNum { get; }
 
-        public UpdateWithDelay(TestDbContext context)
+        public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
         {
-            _context = context;
+            var context = scopedServices.GetRequiredService<TestDbContext>();
 
-        }
+            var commonEntity = await context.CommonNameDateTimes.SingleAsync();
 
-        public async ValueTask RunMethodWhileInLockAsync()
-        {
-            var commonEntity = await _context.CommonNameDateTimes.SingleAsync();
-
-            _context.Add(new NameDateTime { Name = "Read", DateTimeUtc = commonEntity.DateTimeUtc });
-            await _context.SaveChangesAsync();
+            context.Add(new NameDateTime { Name = "Read", DateTimeUtc = commonEntity.DateTimeUtc });
+            await context.SaveChangesAsync();
 
             await Task.Delay(100);
             commonEntity.DateTimeUtc = DateTime.UtcNow;
             commonEntity.Name = Guid.NewGuid().ToString();
-            _context.Add(new NameDateTime { Name = "Write", DateTimeUtc = commonEntity.DateTimeUtc });
+            context.Add(new NameDateTime { Name = "Write", DateTimeUtc = commonEntity.DateTimeUtc });
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }

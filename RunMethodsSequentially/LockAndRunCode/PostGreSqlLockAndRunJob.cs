@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This the DistributedLock Postgres to lock on a global Postgres database available to all instances of the application
+    /// </summary>
     public class PostgreSqlLockAndRunJob : ILockAndRunJob
     {
         private readonly string _connectionString;

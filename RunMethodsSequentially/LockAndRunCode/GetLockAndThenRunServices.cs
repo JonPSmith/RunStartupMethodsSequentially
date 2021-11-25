@@ -8,6 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This applies the registered lock types and tries each in order until it has a lock.
+    /// If no lock can be found then it throws an exception.
+    /// If it gets a lock, then it will execute the startup services that you have registered
+    /// 
+    /// </summary>
     public class GetLockAndThenRunServices : IGetLockAndThenRunServices
     {
         private readonly IServiceProvider _serviceProvider;

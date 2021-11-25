@@ -5,11 +5,13 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Medallion.Threading.FileSystem;
-using Medallion.Threading.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This the DistributedLock FileSystem to lock on a global directory available to all instances of the application
+    /// </summary>
     public class FileSystemLockAndRunJob : ILockAndRunJob
     {
         private readonly string _directoryFilePath;

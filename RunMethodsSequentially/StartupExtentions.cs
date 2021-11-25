@@ -9,6 +9,16 @@ namespace RunMethodsSequentially
 {
     public static class StartupExtensions
     {
+        /// <summary>
+        /// This registers the RunMethodsSequentially feature into your DI services, 
+        /// and you then register how you want to lock the your global resource(s) via the options.
+        /// NOTE: By default the RunMethodsSequentially code will be registered as a IHostedService,
+        /// which is correct for usage in a ASP.NET Core. If you aren't usinh ASP.NET Core, then see the 
+        /// docs on how to register RunMethodsSequentially as a normal service
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="optionsAction"></param>
+        /// <returns></returns>
         public static RunSequentiallyOptions RegisterRunMethodsSequentially(this IServiceCollection services,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
@@ -24,6 +34,12 @@ namespace RunMethodsSequentially
             return options;
         }
 
+        /// <summary>
+        /// This will lock using a SQL Server database. If the SQL Server database hasn't been created yet
+        /// it will pass onto the next lock type, e.g. <see cref="AddFileSystemLockAndRunMethods"/>
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="connectionString">The connection string to the SQL Server database</param>
         public static void AddSqlServerLockAndRunMethods(this RunSequentiallyOptions options,
             string connectionString)
         {
@@ -34,6 +50,12 @@ namespace RunMethodsSequentially
                 new SqlServerLockAndRunJob(options, connectionString)));
         }
 
+        /// <summary>
+        /// This will lock using a PostgreSQL database. If the PostgreSQL database hasn't been created yet
+        /// it will pass onto the next lock type, e.g. <see cref="AddFileSystemLockAndRunMethods"/>
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="connectionString">The connection string to the PostgreSQL database</param>
         public static void AddPostgreSqlLockAndRunMethods(this RunSequentiallyOptions options,
             string connectionString)
         {
@@ -44,6 +66,13 @@ namespace RunMethodsSequentially
                 new PostgreSqlLockAndRunJob(options, connectionString)));
         }
 
+        /// <summary>
+        /// This will lock on a filesytem directory in your running application, e.g. 
+        /// in ASP.NET Core the wwwroot directory. If it can't find the directory it will pass onto
+        /// the next lock type. If there isn't a next lock type it will fail
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="directoryFilePath">The filepath to a global directory accessable by all the instances of your app</param>
         public static void AddFileSystemLockAndRunMethods(this RunSequentiallyOptions options,
             string directoryFilePath)
         {
@@ -54,10 +83,29 @@ namespace RunMethodsSequentially
                 new FileSystemLockAndRunJob(options, directoryFilePath)));
         }
 
-        public static RunSequentiallyOptions RegisterServiceToRunInJob<TService>(this RunSequentiallyOptions options)
-            where TService : class, IServiceToCallWhileInLock
+        /// <summary>
+        /// This just runs the your startup services without locking anything.
+        /// This is useful if you are only running one instance of your application
+        /// NOTE: Locking a database is fast (1 ms local SQL Server), but no lock only takes 50 us
+        /// </summary>
+        /// <param name="options"></param>
+        public static void AddRunMethodsWithoutLock(this RunSequentiallyOptions options)
         {
-            options.Services.AddTransient<IServiceToCallWhileInLock, TService>();
+            options.LockVersionsInOrder.Add(new TryLockVersion(
+                new NoLockPreLockTest(),
+                new NoLockAndRunJob()));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static RunSequentiallyOptions RegisterServiceToRunInJob<TService>(this RunSequentiallyOptions options)
+            where TService : class, IStartupServiceToRunSequentially
+        {
+            options.Services.AddTransient<IStartupServiceToRunSequentially, TService>();
             return options;
         }
     }
