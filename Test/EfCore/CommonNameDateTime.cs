@@ -9,11 +9,12 @@ namespace Test.EfCore
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int Stage { get; set; }
         public DateTime DateTimeUtc { get; set; }
 
         public override string ToString()
         {
-            return $"Name: {Name}, DateTimeUtc: {DateTimeUtc:O}";
+            return $"Name: {Name}, Stage: {Stage}, DateTimeUtc: {DateTimeUtc:O}";
         }
     }
 }

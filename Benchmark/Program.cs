@@ -22,7 +22,7 @@ public class Program
 
         var options = this.CreateUniqueClassOptions<TestDbContext>();
         _context = new TestDbContext(options);
-        _context.Database.EnsureCreated();
+        _context.Database.EnsureClean();
     }
 
     [IterationSetup]
@@ -34,11 +34,11 @@ public class Program
         var options = services.RegisterRunMethodsSequentially(options =>
         {
             options.RegisterAsHostedService = false;
-            options.AddRunMethodsWithoutLock();
-            //options.AddSqlServerLockAndRunMethods(_context.Database.GetConnectionString());
-            options.RegisterServiceToRunInJob<DoNothingStartupService>();
-            //options.RegisterServiceToRunInJob<UpdateDatabase1>();
-            //options.RegisterServiceToRunInJob<UpdateDatabase2>();
+            options.AddSqlServerLockAndRunMethods(_context.Database.GetConnectionString());
+            //options.AddRunMethodsWithoutLock();
+            //options.RegisterServiceToRunInJob<DoNothingStartupService>();
+            options.RegisterServiceToRunInJob<UpdateDatabase1>();
+            options.RegisterServiceToRunInJob<UpdateDatabase2>();
             //options.RegisterServiceToRunInJob<UpdateDatabaseUseScoped1>();
             //options.RegisterServiceToRunInJob<UpdateDatabaseUseScoped2>();
         });

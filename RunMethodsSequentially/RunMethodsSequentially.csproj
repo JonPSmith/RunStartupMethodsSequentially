@@ -18,7 +18,7 @@
 
 	<PropertyGroup>
 		<PackageId>Net.RunMethodsSequentially</PackageId>
-		<PackageVersion>1.2.0</PackageVersion>
+		<PackageVersion>1.2.0-notforuse</PackageVersion>
 		<Authors>Jon P Smith</Authors>
 		<Description>Runs updates to single resources, e.g. a database, on startup of an application that has multiple instances</Description>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
