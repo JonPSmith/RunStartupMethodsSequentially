@@ -1,8 +1,70 @@
-﻿@{
+﻿@model CommonLogsDto
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>This shows the result of the seeding of the database.</p>
 </div>
+
+<h2>Common entity</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                State
+            </th>
+            <th>
+                Stage
+            </th>
+            <th>
+               Time updated (UTC)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>
+                @Model.Common.Name
+            </td>
+            <td>
+                @Model.Common.Stage
+            </td>
+            <td>
+                @Model.Common.DateTimeUtc.ToString("HH:mm:ss")
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+
+<h2>Logs</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Log
+            </th>
+            <th>
+               Time Created (UTC)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Logs) {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.DateTimeUtc.ToString("HH:mm:ss")
+            </td>
+
+        </tr>
+}
+    </tbody>
+</table>

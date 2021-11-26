@@ -17,8 +17,8 @@ builder.Services.AddDbContext<TestDbContext>(options =>
 
 builder.Services.RegisterRunMethodsSequentially(options =>
     {
-    options.AddSqlServerLockAndRunMethods(connectionString);
-    options.AddFileSystemLockAndRunMethods(lockFolder);
+        options.AddSqlServerLockAndRunMethods(connectionString);
+        options.AddFileSystemLockAndRunMethods(lockFolder);
     })
     .RegisterServiceToRunInJob<StartupServiceEnsureCreated>()
     .RegisterServiceToRunInJob<StartupServiceSeedDatabase>();
@@ -33,6 +33,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

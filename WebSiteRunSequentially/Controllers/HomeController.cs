@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Test.EfCore;
 using WebSiteRunSequentially.Models;
 
 namespace WebSiteRunSequentially.Controllers
@@ -13,9 +14,12 @@ namespace WebSiteRunSequentially.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index([FromServices] TestDbContext context)
         {
-            return View();
+            var common = context.CommonNameDateTimes.SingleOrDefault();
+            var logs = context.NameDateTimes.OrderBy(x => x.DateTimeUtc).ToList();
+
+            return View(new CommonLogsDto(common, logs));
         }
 
         public IActionResult Privacy()
