@@ -17,9 +17,17 @@ namespace WebSiteRunSequentially.Controllers
         public IActionResult Index([FromServices] TestDbContext context)
         {
             var common = context.CommonNameDateTimes.SingleOrDefault();
-            var logs = context.NameDateTimes.OrderBy(x => x.DateTimeUtc).ToList();
+            var logs = context.NameDateTimes.OrderByDescending(x => x.DateTimeUtc).ToList();
 
             return View(new CommonLogsDto(common, logs));
+        }
+
+        public IActionResult DelLogs([FromServices] TestDbContext context)
+        {
+            context.RemoveRange(context.NameDateTimes);
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()

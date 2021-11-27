@@ -10,38 +10,45 @@
 
 <h2>Common entity</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                State
-            </th>
-            <th>
-                Stage
-            </th>
-            <th>
-               Time updated (UTC)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
+@if(@Model.Common == null)
+{
+    <p>No common</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    State
+                </th>
+                <th>
+                    Stage
+                </th>
+                <th>
+                   Time updated (UTC)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
 
-        <tr>
-            <td>
-                @Model.Common.Name
-            </td>
-            <td>
-                @Model.Common.Stage
-            </td>
-            <td>
-                @Model.Common.DateTimeUtc.ToString("HH:mm:ss")
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Model.Common.Name
+                </td>
+                <td>
+                    @Model.Common.Stage
+                </td>
+                <td>
+                    @Model.Common.DateTimeUtc.ToString("HH:mm:ss")
+                </td>
+            </tr>
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
+}
 
-<h2>Logs</h2>
+<h2>Logs - newest first</h2>
 
 <table class="table">
     <thead>
