@@ -1,5 +1,5 @@
 ﻿using RunMethodsSequentially;
-using Test.EfCore;
+using WebSiteRunSequentially.Database;
 
 namespace WebSiteRunSequentially.StartupServices
 {

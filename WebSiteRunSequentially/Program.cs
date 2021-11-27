@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using RunMethodsSequentially;
-using Test.EfCore;
+using WebSiteRunSequentially.Database;
 using WebSiteRunSequentially.StartupServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +32,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using Test.EfCore;
+using WebSiteRunSequentially.Database;
 using WebSiteRunSequentially.Models;
 
 namespace WebSiteRunSequentially.Controllers

@@ -4,9 +4,33 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>This shows the result of the seeding of the database.</p>
+    <h1 class="display-4">Test of using RunStartupMethodsSequentially</h1>
 </div>
+
+<p>
+    This web app is designed to test that two start services, 1. migrate and 2. seed a database is run seperately when using the 
+    <a href="https://github.com/JonPSmith/RunStartupMethodsSequentially">RunStartupMethodsSequentially library.</a>
+</p>
+<p>
+    When this web app is deployed to mutiple instances it will update an single entity (referred to as "Common") , and another entity (referred to as "Logs")
+    provides a log of what happened. From this information you can check that each instance runs the the startup services. 
+    For instance if you had three instances of this apllication running, then you should get something like this.
+</p>
+<h3>Common entity</h3>
+<p>State: Updated, Stage = 3, time = ...</p>
+<h3>Losg - newest first</h3>
+<ul>
+    <li>Common entity found. Updated common to Stage to 3</li>
+    <li>Common entity found. Updated common to Stage to 2</li>
+    <li>No common entity found. Created a new common and set its Stage to 1</li>
+</ul>
+
+<p><i>NOTE: Timings of when each instance runs on Azure is variable.</i></p>
+
+See the page below for the current results.
+
+<hr/>
+<h1 class="text-center">Live results</h1>
 
 <h2>Common entity</h2>
 

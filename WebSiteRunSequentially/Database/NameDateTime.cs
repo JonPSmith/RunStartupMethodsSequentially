@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Test.EfCore
+namespace WebSiteRunSequentially.Database
 {
     public class NameDateTime
     {

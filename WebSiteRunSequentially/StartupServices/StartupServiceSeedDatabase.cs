@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RunMethodsSequentially;
-using Test.EfCore;
+using WebSiteRunSequentially.Database;
 
 namespace WebSiteRunSequentially.StartupServices
 {
@@ -19,7 +19,7 @@ namespace WebSiteRunSequentially.StartupServices
                 context.Add(new CommonNameDateTime{ Name = "New", Stage = 1, DateTimeUtc = startTime });
                 context.Add(new NameDateTime { Name = "No common entity found. Created a new common and set its Stage to 1", DateTimeUtc = startTime});
             }           
-            else if (commonEntity.DateTimeUtc < startTime.AddMinutes(-1))
+            else if (commonEntity.DateTimeUtc < startTime.AddMinutes(-5))
             {
                 var timeDiff = startTime - commonEntity.DateTimeUtc;
                 commonEntity.Name = "Reset";

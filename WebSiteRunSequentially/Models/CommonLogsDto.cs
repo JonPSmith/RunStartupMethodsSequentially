@@ -1,4 +1,4 @@
-﻿using Test.EfCore;
+﻿using WebSiteRunSequentially.Database;
 
 namespace WebSiteRunSequentially.Models
 {

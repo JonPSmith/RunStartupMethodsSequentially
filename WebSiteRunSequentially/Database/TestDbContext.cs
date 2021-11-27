@@ -3,7 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Test.EfCore
+namespace WebSiteRunSequentially.Database
 {
     public class TestDbContext : DbContext
     {
