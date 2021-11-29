@@ -8,6 +8,9 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Test.Helpers
 {
+    //NOTE Parallel.ForEach doesn't handle async
+    //I found a very useful article https://medium.com/@alex.puiu/parallel-foreach-async-in-c-36756f8ebe62 
+    //From this I decided the AsyncParallelForEach approach, which can run async methods in paralle
     public static class ParallelExtensions
     {
         public static async IAsyncEnumerable<int> NumTimesAsyncEnumerable(this int numTimes)

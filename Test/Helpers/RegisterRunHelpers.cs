@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RunMethodsSequentially;
 using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
+using TestSupport.Helpers;
 
 namespace Test.Helpers
 {
@@ -58,6 +59,24 @@ namespace Test.Helpers
             {
                 options.RegisterAsHostedService = false;
                 options.AddRunMethodsWithoutLock();
+            });
+            optionsAction?.Invoke(options);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
+            return lockAndRun;
+        }
+
+        public static IGetLockAndThenRunServices SetupFileSystemLockMethodsSequentially(this TestDbContext context,
+            Action<RunSequentiallyOptions> optionsAction = null)
+        {
+            var services = new ServiceCollection();
+            services.AddDbContext<TestDbContext>(dbOptions =>
+                dbOptions.UseSqlServer(context.Database.GetConnectionString()));
+            var options = services.RegisterRunMethodsSequentially(options =>
+            {
+                options.RegisterAsHostedService = false;
+                options.AddFileSystemLockAndRunMethods(TestData.GetTestDataDir());
             });
             optionsAction?.Invoke(options);
 
