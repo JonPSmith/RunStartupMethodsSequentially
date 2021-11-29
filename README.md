@@ -31,7 +31,7 @@ Simply add the [Net.RunMethodsSequentially](https://www.nuget.org/packages/Net.R
 
 ## 2. Creating your startup services
 
-To create a startup service that will be run while in a lock you need to create a class that inherits the [IStartupServiceToRunSequentially](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/IStartupServiceToRunSequentially.cs) interface. This has a method defined as`ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)`. This is where you put your code to update a shared resource, such as a database.
+To create a startup service that will be run while in a lock you need to create a class that inherits the [IStartupServiceToRunSequentially](https://github.com/JonPSmith/RunStartupMethodsSequentially/blob/main/RunMethodsSequentially/IStartupServiceToRunSequentially.cs) interface. This has a method defined has a `ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)`. This method is where you put your code to update a shared resource, such as a database.
 
 Here is an example of a startup service, in this case its a EF Core Migrate of a database.
 
@@ -58,7 +58,7 @@ The `ApplyYourChangeAsync` is given a _scoped service provider_, which means its
 
 _NOTE: You can use the normal constructor DI injection, but as a scoped service provider is already available you can use that instead._
 
-The `OrderNum` is an way to define the order you want your startup services are run. If services have the same `OrderNum` value, like zero, they will be run in the order they were registered (see next section).
+The `OrderNum` is a way to define the order you want your startup services are run. If services have the same `OrderNum` value, like zero, they will be run in the order they were registered (see next section).
 
 I want to emphasize that your startup services are going to be run multiple times, once for each instance of your application. Therefore your startup service must check if the update it wants to do hasn't already been applies. EF Core's `MigrateAsync` automatically checks if the database needs to be updated, but if you are seeding a database then you check that the seeded hasn't already been done. 
 

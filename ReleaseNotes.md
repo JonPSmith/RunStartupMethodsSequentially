@@ -1,5 +1,9 @@
 # Release Notes
 
+## 1.3.0
+
+- Added logging to the locking / running startup service as an exception in a HostedService is hard to track in production
+
 ## 1.2.0
 
 - BREAKING CHANGE: `RunMethodWhileInLockAsync()` in old interface `IServiceToCallWhileInLock` changed to `ApplyYourChangeAsync(IServiceProvider scopedServices)`. This provides a another way to obtain services instead of constructor injection 

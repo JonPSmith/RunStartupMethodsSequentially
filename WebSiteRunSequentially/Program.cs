@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration
+    .GetConnectionString("DefaultConnection");
 var lockFolder = builder.Environment.WebRootPath;
 
 builder.Services.AddDbContext<TestDbContext>(options =>
