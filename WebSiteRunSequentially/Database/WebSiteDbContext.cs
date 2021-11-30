@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebSiteRunSequentially.Database
 {
-    public class TestDbContext : DbContext
+    public class WebSiteDbContext : DbContext
     {
-        public TestDbContext(DbContextOptions<TestDbContext> options)
+        public WebSiteDbContext(DbContextOptions<WebSiteDbContext> options)
             : base(options) { }
 
         public DbSet<NameDateTime> NameDateTimes { get; set; }

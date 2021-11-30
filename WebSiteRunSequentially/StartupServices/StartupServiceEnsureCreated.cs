@@ -8,7 +8,7 @@ namespace WebSiteRunSequentially.StartupServices
         public int OrderNum { get; }
         public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
         {
-            var testDbContext = scopedServices.GetRequiredService<TestDbContext>();
+            var testDbContext = scopedServices.GetRequiredService<WebSiteDbContext>();
             await testDbContext.Database.EnsureCreatedAsync();
         }
     }

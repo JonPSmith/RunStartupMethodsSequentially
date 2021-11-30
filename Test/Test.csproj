@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RunMethodsSequentially\RunMethodsSequentially.csproj" />
+    <ProjectReference Include="..\WebSiteRunSequentially\WebSiteRunSequentially.csproj" />
   </ItemGroup>
 
   <ItemGroup>

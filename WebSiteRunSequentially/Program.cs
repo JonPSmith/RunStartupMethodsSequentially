@@ -12,7 +12,7 @@ var connectionString = builder.Configuration
     .GetConnectionString("DefaultConnection");
 var lockFolder = builder.Environment.WebRootPath;
 
-builder.Services.AddDbContext<TestDbContext>(options =>
+builder.Services.AddDbContext<WebSiteDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.RegisterRunMethodsSequentially(options =>

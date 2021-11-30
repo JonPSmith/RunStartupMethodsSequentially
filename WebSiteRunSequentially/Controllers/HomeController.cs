@@ -14,7 +14,7 @@ namespace WebSiteRunSequentially.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index([FromServices] TestDbContext context)
+        public IActionResult Index([FromServices] WebSiteDbContext context)
         {
             var common = context.CommonNameDateTimes.SingleOrDefault();
             var logs = context.NameDateTimes.OrderByDescending(x => x.DateTimeUtc).ToList();
@@ -22,7 +22,7 @@ namespace WebSiteRunSequentially.Controllers
             return View(new CommonLogsDto(common, logs));
         }
 
-        public IActionResult DelLogs([FromServices] TestDbContext context)
+        public IActionResult DelLogs([FromServices] WebSiteDbContext context)
         {
             context.RemoveRange(context.NameDateTimes);
             context.SaveChanges();
