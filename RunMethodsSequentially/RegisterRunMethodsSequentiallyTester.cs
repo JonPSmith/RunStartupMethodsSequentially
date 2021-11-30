@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// Copyright (c) 2021 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using RunMethodsSequentially.LockAndRunCode;
-using RunMethodsSequentially.TestHelpers;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace RunMethodsSequentially
@@ -29,18 +28,12 @@ namespace RunMethodsSequentially
         public string LockFolderPath { get; } = Directory.GetCurrentDirectory();
 
         /// <summary>
-        /// This holds the RunMethodsSequentially logs
-        /// </summary>
-        public List<LocalLogOutput> Logs = new List<LocalLogOutput>();
-
-        /// <summary>
         /// Run this to check that your <see cref="StartupExtensions.RegisterRunMethodsSequentially"/> with its options work
         /// </summary>
         /// <returns></returns>
         public async Task RunHostStartupCodeAsync()
         {
-            Services.AddSingleton<ILogger<GetLockAndThenRunServices>>(
-                new Logger<GetLockAndThenRunServices>(new LoggerFactory(new[] { new LoggerProviderActionOut(Logs.Add) })));
+            Services.AddLogging();
             var serviceProvider = Services.BuildServiceProvider();
             var options = serviceProvider.GetRequiredService<RunSequentiallyOptions>();
             if (options.RegisterAsHostedService)

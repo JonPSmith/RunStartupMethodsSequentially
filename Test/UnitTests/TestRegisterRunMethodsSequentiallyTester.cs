@@ -32,6 +32,8 @@ namespace Test.UnitTests
             context.Database.EnsureClean();
 
             var builder = new RegisterRunMethodsSequentiallyTester();
+
+            //ATTEMPT
             //Copy your setup in your Program here 
             //---------------------------------------------------------------
             builder.Services.AddDbContext<TestDbContext>(options =>
@@ -45,14 +47,8 @@ namespace Test.UnitTests
                 .RegisterServiceToRunInJob<UpdateDatabase2>();
             //----------------------------------------------------------------
 
-            //ATTEMPT
-            await builder.RunHostStartupCodeAsync();
-
             //VERIFY
-            foreach (var log in builder.Logs)
-            {
-                _output.WriteLine(log.Message);
-            }
+            await builder.RunHostStartupCodeAsync();
         }
 
         [Fact]
@@ -64,6 +60,8 @@ namespace Test.UnitTests
             context.Database.EnsureDeleted();
 
             var builder = new RegisterRunMethodsSequentiallyTester();
+
+            //ATTEMPT
             //Copy your setup in your Program here 
             //---------------------------------------------------------------
             builder.Services.AddDbContext<TestDbContext>(options =>
@@ -77,14 +75,8 @@ namespace Test.UnitTests
                 .RegisterServiceToRunInJob<UpdateDatabase2>();
             //----------------------------------------------------------------
 
-            //ATTEMPT
-            await builder.RunHostStartupCodeAsync();
-
             //VERIFY
-            foreach (var log in builder.Logs)
-            {
-                _output.WriteLine(log.Message);
-            }
+            await builder.RunHostStartupCodeAsync();
         }
 
         [Fact]
@@ -96,6 +88,8 @@ namespace Test.UnitTests
             context.Database.EnsureClean();
 
             var builder = new RegisterRunMethodsSequentiallyTester();
+
+            //ATTEMPT
             //Copy your setup in your Program here 
             //---------------------------------------------------------------
             builder.Services.AddDbContext<TestDbContext>(options =>
@@ -110,14 +104,8 @@ namespace Test.UnitTests
                 .RegisterServiceToRunInJob<UpdateDatabase2>();
             //----------------------------------------------------------------
 
-            //ATTEMPT
-            await builder.RunHostStartupCodeAsync();
-
             //VERIFY
-            foreach (var log in builder.Logs)
-            {
-                _output.WriteLine(log.Message);
-            }
+            await builder.RunHostStartupCodeAsync();
         }
 
         [Fact]
