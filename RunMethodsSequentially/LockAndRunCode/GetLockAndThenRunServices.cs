@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
@@ -33,6 +34,7 @@ namespace RunMethodsSequentially.LockAndRunCode
         {
             using var scope = _serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
+            var logger = scopedServices.GetRequiredService<ILogger<GetLockAndThenRunServices>>();
 
             var options = scopedServices.GetRequiredService<RunSequentiallyOptions>();
             if (!options.LockVersionsInOrder.Any())
@@ -40,14 +42,17 @@ namespace RunMethodsSequentially.LockAndRunCode
                     $"You must register at least one lock service when registering {nameof(StartupExtensions.RegisterRunMethodsSequentially)}, " +
                     $"for instance services.{nameof(StartupExtensions.RegisterRunMethodsSequentially)}(options => options.{nameof(StartupExtensions.AddSqlServerLockAndRunMethods)}(connectionString))...");
             foreach (var lockVersion in options.LockVersionsInOrder)
-            {
+            {        
                 if (await lockVersion.PreLockCheck.CheckLockResourceExistsAsync())
                 {
+                    logger.LogInformation("The {0} exists and will be locked.", lockVersion.LockAndRunClass.ResourceName);
+
                     //The resource to lock on is there, so lock and run the methods and exit
                     await lockVersion.LockAndRunClass.LockAndRunMethodsAsync(scopedServices);
                     return true;
                 }
                 //else resource wasn't available so try another lock version
+                logger.LogInformation("The {0} was not found.", lockVersion.LockAndRunClass.ResourceName);
             }
 
             //Failed to find any resource to lock, so return a useful exception

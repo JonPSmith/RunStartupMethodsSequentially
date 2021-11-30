@@ -4,16 +4,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RunMethodsSequentially;
 using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
+using TestSupport.EfHelpers;
 using TestSupport.Helpers;
 
 namespace Test.Helpers
 {
     public static class RegisterRunHelpers
     {
-        public static IGetLockAndThenRunServices SetupSqlServerRunMethodsSequentially(this TestDbContext context,
+        public static ServiceCollection SetupSqlServerRunMethodsSequentially(this TestDbContext context,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
             var services = new ServiceCollection();
@@ -26,12 +28,10 @@ namespace Test.Helpers
             });
             optionsAction?.Invoke(options);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
-            return lockAndRun;
+            return services;
         }
 
-        public static IGetLockAndThenRunServices SetupPostgreSqlRunMethodsSequentially(this TestDbContext context,
+        public static ServiceCollection SetupPostgreSqlRunMethodsSequentially(this TestDbContext context,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
             var services = new ServiceCollection();
@@ -44,12 +44,10 @@ namespace Test.Helpers
             });
             optionsAction?.Invoke(options);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
-            return lockAndRun;
+            return services;
         }
 
-        public static IGetLockAndThenRunServices SetupNoLockRunMethodsSequentially(this TestDbContext context,
+        public static ServiceCollection SetupNoLockRunMethodsSequentially(this TestDbContext context,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
             var services = new ServiceCollection();
@@ -62,12 +60,10 @@ namespace Test.Helpers
             });
             optionsAction?.Invoke(options);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
-            return lockAndRun;
+            return services;
         }
 
-        public static IGetLockAndThenRunServices SetupFileSystemLockMethodsSequentially(this TestDbContext context,
+        public static ServiceCollection SetupFileSystemLockMethodsSequentially(this TestDbContext context,
             Action<RunSequentiallyOptions> optionsAction = null)
         {
             var services = new ServiceCollection();
@@ -80,9 +76,7 @@ namespace Test.Helpers
             });
             optionsAction?.Invoke(options);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
-            return lockAndRun;
+            return services;
         }
     }
 }

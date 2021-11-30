@@ -79,7 +79,7 @@ namespace RunMethodsSequentially
             if (directoryFilePath == null) throw new ArgumentNullException(nameof(directoryFilePath));
 
             options.LockVersionsInOrder.Add(new TryLockVersion(
-                new FileSystemDoesDirectoryExist(directoryFilePath), 
+                new FileSystemDoesDirectoryExist(directoryFilePath),
                 new FileSystemLockAndRunJob(options, directoryFilePath)));
         }
 
@@ -97,7 +97,10 @@ namespace RunMethodsSequentially
         }
 
         /// <summary>
-        /// 
+        /// This method allows you to register your startup services, i.e. classes that inherit the
+        /// interface called <see cref="IStartupServiceToRunSequentially"/>.
+        /// NOTE that the order in which your startup services are registered defines the order they are executed,
+        /// BUT a <see cref="IStartupServiceToRunSequentially.OrderNum"/> value of not zero overides the order of execution
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <param name="options"></param>

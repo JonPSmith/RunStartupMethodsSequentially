@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
@@ -16,6 +17,8 @@ namespace RunMethodsSequentially.LockAndRunCode
         /// <param name="scopedServices">NOTE: This is provided as a scopedServices</param>
         public static async Task RunJobAsync(this IServiceProvider scopedServices)
         {
+            var logger = scopedServices.GetRequiredService<ILogger<GetLockAndThenRunServices>>();
+
             var servicesToRun = scopedServices.GetServices<IStartupServiceToRunSequentially>().ToArray();
             if (!servicesToRun.Any())
                 throw new RunSequentiallyException(
@@ -32,6 +35,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             foreach (var serviceToRun in servicesToRun.OrderBy(service => service.OrderNum))
             {
                 await serviceToRun.ApplyYourChangeAsync(scopedServices);
+                logger.LogInformation("The startup service class [{0}] was successfully executed.", serviceToRun.GetType().Name);
             }
         }
     }

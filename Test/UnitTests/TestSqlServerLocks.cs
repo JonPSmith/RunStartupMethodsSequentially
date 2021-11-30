@@ -107,11 +107,14 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially( 
+            var services = context.SetupSqlServerRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
-            using(new TimeThings(_output))
+            using (new TimeThings(_output))
                 await lockAndRun.LockAndLoadAsync();
 
             //VERIFY
@@ -130,12 +133,15 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var services = context.SetupSqlServerRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                     options.RegisterServiceToRunInJob<UpdateDatabase2>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();
@@ -158,13 +164,16 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var services = context.SetupSqlServerRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateWithPositiveOrderNum>();
                     options.RegisterServiceToRunInJob<UpdateWithZeroOrderNum>();
                     options.RegisterServiceToRunInJob<UpdateWithNegativeOrderNum>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();
@@ -182,13 +191,16 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var services = context.SetupSqlServerRunMethodsSequentially(
                 options =>
                 {
                     options.AddFileSystemLockAndRunMethods(TestData.GetTestDataDir());
                     options.RegisterServiceToRunInJob<SqlServerEnsureCreatedDatabaseOnly>();
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();
@@ -212,8 +224,11 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var services = context.SetupSqlServerRunMethodsSequentially(
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
@@ -231,7 +246,10 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially();
+            var services = context.SetupSqlServerRunMethodsSequentially();
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
@@ -249,14 +267,16 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupSqlServerRunMethodsSequentially(
+            var services = context.SetupSqlServerRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
-            //ATTEMPT
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
 
@@ -275,6 +295,7 @@ namespace Test.UnitTests
                 options.RegisterAsHostedService = false;
                 //options.AddLockSqlServerAndRunMethods(context.Database.GetConnectionString());
             });
+            var testLogger = new RegisterTestLogger(services);
             var serviceProvider = services.BuildServiceProvider();
             var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 

@@ -32,6 +32,7 @@ namespace WebSiteRunSequentially.Controllers
 
         public IActionResult Privacy()
         {
+            _logger.LogInformation("The Privacy link has been clicked");
             return View();
         }
 

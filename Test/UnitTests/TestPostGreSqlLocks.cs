@@ -79,10 +79,13 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
+            context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially( 
+            var services = context.SetupPostgreSqlRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();
@@ -101,14 +104,17 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
+            context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
+            var services = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                     options.RegisterServiceToRunInJob<UpdateDatabase2>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();
@@ -130,13 +136,16 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
+            var services = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>
                 {
                     options.AddFileSystemLockAndRunMethods(TestData.GetTestDataDir());
                     options.RegisterServiceToRunInJob<SqlServerEnsureCreatedDatabaseOnly>();
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();
@@ -160,8 +169,11 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureDeleted();
 
-            var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
+            var services = context.SetupPostgreSqlRunMethodsSequentially(
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
@@ -177,9 +189,12 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
+            context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially();
+            var services = context.SetupPostgreSqlRunMethodsSequentially();
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
@@ -195,16 +210,18 @@ namespace Test.UnitTests
             //SETUP
             var dbOptions = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
-            await context.EnsureCreatedAndEmptyPostgreSqlAsync<TestDbContext>();
+            context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupPostgreSqlRunMethodsSequentially(
+            var services = context.SetupPostgreSqlRunMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
                     options.RegisterServiceToRunInJob<UpdateDatabase1>();
-                });
+                }); 
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
-            //ATTEMPT
             //ATTEMPT
             var ex = await Assert.ThrowsAsync<RunSequentiallyException>(async () => await lockAndRun.LockAndLoadAsync());
 
@@ -223,6 +240,7 @@ namespace Test.UnitTests
                 options.RegisterAsHostedService = false;
                 //options.AddLockSqlServerAndRunMethods(context.Database.GetConnectionString());
             });
+            var testLogger = new RegisterTestLogger(services);
             var serviceProvider = services.BuildServiceProvider();
             var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 

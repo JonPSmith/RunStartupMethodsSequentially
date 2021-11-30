@@ -12,6 +12,8 @@ This library allows you create services known as _startup services_ which are ru
 
 But be aware every startup service will be run on every application's instances, for example if your application is running four instances then your startup service will be run four times. This means your startup services should check if the database has already been updated, e.g. if your service adds an admin user to the the authentication database it should first check that that admin user isn't already been added (NOTE: EF Core's `Migrate` method checks if the database needs to be updated, which stops your database being migrated multiple times).
 
+Secondly, you should test your use of this library because in ASP.NET Core it is run as a [_hosted service_](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services) and if there is an exception the application won't give you any feedback on what went wrong. I have added a class called []
+
 Another warning is that applying a database migration is that the migration must not contain what are known as _breaking changes_ - that is a change that will cause a the currently running application from working (see [the five-stage app update in this article](https://www.thereformedprogrammer.net/handling-entity-framework-core-database-migrations-in-production-part-2/) for more info). This issue isn't specific to this library, but applies whenever you are updating an application without any break in the service, known as _24/7_ or _continuous_ application.
 
 ## What you have to do to use this library?

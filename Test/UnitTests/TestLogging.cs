@@ -5,36 +5,38 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RunMethodsSequentially;
 using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
 using Test.Helpers;
 using Test.ServicesToCall;
 using TestSupport.EfHelpers;
+using TestSupport.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests
 {
-    public class TestNoLockVersion
+    public class TestLogging
     {
         private readonly ITestOutputHelper _output;
 
-        public TestNoLockVersion(ITestOutputHelper output)
+        public TestLogging(ITestOutputHelper output)
         {
             _output = output;
         }
 
         [Fact]
-        public async Task TestNoLockRunOneService()
+        public async Task TestLoggingRunOneService()
         {
             //SETUP
             var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var services = context.SetupNoLockRunMethodsSequentially( 
+            var services = context.SetupSqlServerRunMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
             var testLogger = new RegisterTestLogger(services);
             var serviceProvider = services.BuildServiceProvider();
@@ -45,27 +47,29 @@ namespace Test.UnitTests
                 await lockAndRun.LockAndLoadAsync();
 
             //VERIFY
-            var entry = context.NameDateTimes.Single();
-            entry.DateTimeUtc.ShouldBeInRange(DateTime.UtcNow.AddMilliseconds(-500), DateTime.UtcNow);
-            entry.Name.ShouldEqual(nameof(UpdateDatabase1));
-            var common = context.CommonNameDateTimes.Single();
-            common.DateTimeUtc.ShouldEqual(entry.DateTimeUtc);
+            foreach(var log in testLogger.Logs)
+            {
+                _output.WriteLine(log.Message);
+            }
+            testLogger.Logs.Count.ShouldEqual(2);
+            var i = 0;
+            testLogger.Logs[i++].Message.ShouldEqual("The SQL Server database with name [RunMethodsSequentially-Test_TestLogging] exists and will be locked.");
+            testLogger.Logs[i++].Message.ShouldEqual("The startup service class [UpdateDatabase1] was successfully executed.");
         }
 
         [Fact]
-        public async Task TestNoLockRunOrderedByWhatOrderToRunIn()
+        public async Task TestLoggingRunTwoServices()
         {
             //SETUP
             var dbOptions = this.CreateUniqueClassOptions<TestDbContext>();
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var services = context.SetupNoLockRunMethodsSequentially(
+            var services = context.SetupSqlServerRunMethodsSequentially(
                 options =>
                 {
-                    options.RegisterServiceToRunInJob<UpdateWithZeroOrderNum>();
-                    options.RegisterServiceToRunInJob<UpdateWithPositiveOrderNum>();
-                    options.RegisterServiceToRunInJob<UpdateWithNegativeOrderNum>();
+                    options.RegisterServiceToRunInJob<UpdateDatabase1>();
+                    options.RegisterServiceToRunInJob<UpdateDatabase2>();
                 });
             var testLogger = new RegisterTestLogger(services);
             var serviceProvider = services.BuildServiceProvider();
@@ -75,8 +79,16 @@ namespace Test.UnitTests
             await lockAndRun.LockAndLoadAsync();
 
             //VERIFY
-            var entries = context.NameDateTimes.OrderBy(x => x.Id).ToList();
-            entries.Select(x => x.Name).ShouldEqual(new[] { "OrderNum = -1", "No OrderNum", "OrderNum = +1" });
+            foreach (var log in testLogger.Logs)
+            {
+                _output.WriteLine(log.Message);
+            }
+            testLogger.Logs.Count.ShouldEqual(3);
+            var i = 0;
+            testLogger.Logs[i++].Message.ShouldEqual("The SQL Server database with name [RunMethodsSequentially-Test_TestLogging] exists and will be locked.");
+            testLogger.Logs[i++].Message.ShouldEqual("The startup service class [UpdateDatabase1] was successfully executed.");
+            testLogger.Logs[i++].Message.ShouldEqual("The startup service class [UpdateDatabase2] was successfully executed.");
         }
+
     }
 }

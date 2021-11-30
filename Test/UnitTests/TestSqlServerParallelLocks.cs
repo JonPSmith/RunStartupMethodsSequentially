@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 using Medallion.Threading.FileSystem;
 using Medallion.Threading.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RunMethodsSequentially;
+using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
 using Test.Helpers;
 using Test.ServicesToCall;
@@ -143,8 +145,11 @@ namespace Test.UnitTests
             async Task TaskAsync(int i1)
             {
                 using var localContext = new TestDbContext(dbOptions);
-                var lockAndRun = localContext.SetupSqlServerRunMethodsSequentially(
+                var services = localContext.SetupSqlServerRunMethodsSequentially(
                     options => options.RegisterServiceToRunInJob<UpdateWithDelay>());
+                var testLogger = new RegisterTestLogger(services);
+                var serviceProvider = services.BuildServiceProvider();
+                var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
                 await lockAndRun.LockAndLoadAsync();
             }
 
@@ -177,12 +182,15 @@ namespace Test.UnitTests
 
             async Task TaskAsync(int i1)
             {
-                var lockAndRun = context.SetupSqlServerRunMethodsSequentially(options =>
+                var services = context.SetupSqlServerRunMethodsSequentially(options =>
                 {
                     options.DefaultLockTimeoutInSeconds = 1;
                     options.RegisterServiceToRunInJob<UpdateThatTakes800Milliseconds1>();
                     options.RegisterServiceToRunInJob<UpdateThatTakes800Milliseconds2>();
                 });
+                var testLogger = new RegisterTestLogger(services);
+                var serviceProvider = services.BuildServiceProvider();
+                var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
                 await lockAndRun.LockAndLoadAsync();
             }
 

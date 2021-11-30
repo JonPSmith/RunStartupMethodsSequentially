@@ -4,7 +4,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using RunMethodsSequentially;
+using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
 using Test.Helpers;
 using Test.ServicesToCall;
@@ -32,11 +34,14 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupFileSystemLockMethodsSequentially( 
+            var services = context.SetupFileSystemLockMethodsSequentially( 
                 options => options.RegisterServiceToRunInJob<UpdateDatabase1>());
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
-            using(new TimeThings(_output))
+            using (new TimeThings(_output))
                 await lockAndRun.LockAndLoadAsync();
 
             //VERIFY
@@ -55,13 +60,16 @@ namespace Test.UnitTests
             using var context = new TestDbContext(dbOptions);
             context.Database.EnsureClean();
 
-            var lockAndRun = context.SetupNoLockRunMethodsSequentially(
+            var services = context.SetupFileSystemLockMethodsSequentially(
                 options =>
                 {
                     options.RegisterServiceToRunInJob<UpdateWithZeroOrderNum>();
                     options.RegisterServiceToRunInJob<UpdateWithPositiveOrderNum>();
                     options.RegisterServiceToRunInJob<UpdateWithNegativeOrderNum>();
                 });
+            var testLogger = new RegisterTestLogger(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var lockAndRun = serviceProvider.GetRequiredService<IGetLockAndThenRunServices>();
 
             //ATTEMPT
             await lockAndRun.LockAndLoadAsync();

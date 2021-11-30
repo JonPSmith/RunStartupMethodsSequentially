@@ -2,7 +2,8 @@
 
 ## 1.3.0
 
-- Added logging to the locking / running startup service as an exception in a HostedService is hard to track in production
+- New Feature: Added a class to test that your startup code will run properly
+- New Feature: Added logging so that you can see what RunMethodsSequentially did on host startup
 
 ## 1.2.0
 
