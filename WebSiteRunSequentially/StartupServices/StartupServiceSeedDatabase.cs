@@ -25,7 +25,7 @@ namespace WebSiteRunSequentially.StartupServices
                 commonEntity.Name = "Reset";
                 commonEntity.DateTimeUtc = startTime;
                 commonEntity.Stage = 1;
-                context.Add(new NameDateTime { Name = $"Common entity found, but was {timeDiff.ToString(@"hh\:mm\:ss")} old. Updated common to Stage to 1", DateTimeUtc = startTime });
+                context.Add(new NameDateTime { Name = $"Common entity found, but was {timeDiff:hh\\:mm\\:ss} old. Updated common to Stage to 1", DateTimeUtc = startTime });
             }
             else
             {

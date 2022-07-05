@@ -10,7 +10,16 @@ namespace RunMethodsSequentially.LockAndRunCode
     /// </summary>
     public interface IPreLockTest
     {
+        /// <summary>
+        /// This defines a method that will return true if the global resource exists
+        /// </summary>
+        /// <returns></returns>
         ValueTask<bool> CheckLockResourceExistsAsync();
+
+        /// <summary>
+        /// This defines a method that will return true if the global resource exists
+        /// </summary>
+        /// <returns></returns>
         bool CheckLockResourceExists();
     }
 }

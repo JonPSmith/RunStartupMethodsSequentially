@@ -7,25 +7,17 @@ using Microsoft.Extensions.DependencyInjection;
 using RunMethodsSequentially;
 using Test.EfCore;
 
-namespace Test.ServicesToCall
+namespace Test.ServicesToCall;
+
+public class UpdateWithZeroOrderNum : IStartupServiceToRunSequentially
 {
-    public class UpdateWithZeroOrderNum : IStartupServiceToRunSequentially
+    public int OrderNum { get; }
+
+    public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
     {
-        private readonly TestDbContext context;
+        var context = scopedServices.GetRequiredService<TestDbContext>();
 
-        public UpdateWithZeroOrderNum(TestDbContext context)
-        {
-            context = context;
-        }
-
-        public int OrderNum { get; }
-
-        public async ValueTask ApplyYourChangeAsync(IServiceProvider scopedServices)
-        {
-            var context = scopedServices.GetRequiredService<TestDbContext>();
-
-            context.Add(new NameDateTime { Name = $"No OrderNum", DateTimeUtc = DateTime.UtcNow });
-            await context.SaveChangesAsync();
-        }
+        context.Add(new NameDateTime { Name = $"No OrderNum", DateTimeUtc = DateTime.UtcNow });
+        await context.SaveChangesAsync();
     }
 }

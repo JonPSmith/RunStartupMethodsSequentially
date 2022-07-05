@@ -16,16 +16,29 @@ namespace RunMethodsSequentially.LockAndRunCode
         private readonly string _connectionString;
         private readonly RunSequentiallyOptions _options;
 
+        /// <summary>
+        /// This contains the name of the resource that this version is looking for
+        /// </summary>
         public string ResourceName { get; }
 
+        /// <summary>
+        /// Ctor - needs the options and the connection string
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="connectionString"></param>
         public SqlServerLockAndRunJob(RunSequentiallyOptions options, string connectionString)
         {
-            _options = options;
-            _connectionString = connectionString;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 
             ResourceName = $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]";
         }
 
+        /// <summary>
+        /// This will obtain a global lock and then call the <see cref="JobRunner"/> to run all the
+        /// registered <see cref="IStartupServiceToRunSequentially"/> services
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         public async Task LockAndRunActionAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
@@ -39,7 +52,7 @@ namespace RunMethodsSequentially.LockAndRunCode
         }
 
         /// <summary>
-        /// This runs the given async action
+        /// This runs the given async action within a global lock
         /// </summary>
         /// <param name="actionAsync"></param>
         /// <param name="options"></param>
@@ -54,6 +67,11 @@ namespace RunMethodsSequentially.LockAndRunCode
             }
         }
 
+        /// <summary>
+        /// This runs the given sync action within a global lock
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="options"></param>
         public void LockAndRunAction(Action action, RunSequentiallyOptions options)
         {
             var distributedLock = new SqlDistributedLock(_options.GlobalLockName, _connectionString);

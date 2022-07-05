@@ -24,8 +24,21 @@ namespace RunMethodsSequentially.LockAndRunCode
         /// <returns></returns>
         Task LockAndRunActionAsync(IServiceProvider serviceProvider);
 
+        /// <summary>
+        /// This will run an async action within a global lock
+        /// via the <see cref="LockAndRunNow"/> methods
+        /// </summary>
+        /// <param name="actionAsync"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         ValueTask LockAndRunActionAsync(Func<ValueTask> actionAsync, RunSequentiallyOptions options);
 
+        /// <summary>
+        /// This will run a sync action within a global lock
+        /// via the <see cref="LockAndRunNow"/> methods
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="options"></param>
         void LockAndRunAction(Action action, RunSequentiallyOptions options);
     }
 }

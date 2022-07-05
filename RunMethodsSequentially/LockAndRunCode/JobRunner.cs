@@ -9,6 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// This is the service that runs all the registered <see cref="IStartupServiceToRunSequentially"/> services.
+    /// It assumes the global lock has been acquired.
+    /// </summary>
     public static class JobRunner
     {
         /// <summary>

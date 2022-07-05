@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace RunMethodsSequentially.LockAndRunCode
 {
+    /// <summary>
+    /// Interface that defines the service that is run on startup
+    /// </summary>
     public interface IGetLockAndThenRunServices
     {
         /// <summary>

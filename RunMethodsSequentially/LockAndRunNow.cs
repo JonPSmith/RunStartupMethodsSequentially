@@ -8,10 +8,16 @@ using System.Threading.Tasks;
 namespace RunMethodsSequentially;
 
 /// <summary>
-/// 
+/// This class allows you to obtain a lock on a global resource and then runs the provided action
 /// </summary>
 public static class LockAndRunNow
 {
+    /// <summary>
+    /// This will obtain a lock on a global resource and then run your async action
+    /// </summary>
+    /// <param name="yourActionAsync"></param>
+    /// <param name="optionsAction"></param>
+    /// <returns></returns>
     public static async ValueTask RunActionAsync(Func<ValueTask> yourActionAsync, Action<RunSequentiallyOptions> optionsAction = null)
     {
         var options = new RunSequentiallyOptions(null);
@@ -30,8 +36,11 @@ public static class LockAndRunNow
         ThrowExceptionMissingResources(options);
     }
 
-
-
+    /// <summary>
+    /// This will obtain a lock on a global resource and then run your sync action
+    /// </summary>
+    /// <param name="yourAction"></param>
+    /// <param name="optionsAction"></param>
     public static void RunAction(Action yourAction, Action<RunSequentiallyOptions> optionsAction = null)
     {
         var options = new RunSequentiallyOptions(null);

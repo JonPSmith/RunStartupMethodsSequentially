@@ -13,16 +13,28 @@ namespace RunMethodsSequentially.LockAndRunCode
     {
         private readonly string _connectionString;
 
+        /// <summary>
+        /// Ctor - needs SqlServer connection string
+        /// </summary>
+        /// <param name="connectionString"></param>
         public SqlServerDoesDatabaseExist(string connectionString)
         {
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// This returns true if the SqlServer Database exists
+        /// </summary>
+        /// <returns></returns>
         public ValueTask<bool> CheckLockResourceExistsAsync()
         {
             return CheckLockResourceExists(true);
         }
 
+        /// <summary>
+        /// This returns true if the SqlServer Database exists
+        /// </summary>
+        /// <returns></returns>
         public bool CheckLockResourceExists()
         {
             return CheckLockResourceExists(false).CheckSyncValueTaskWorkedAndReturnResult();

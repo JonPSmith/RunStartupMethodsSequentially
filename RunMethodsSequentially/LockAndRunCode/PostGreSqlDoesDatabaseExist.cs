@@ -13,16 +13,28 @@ public class PostgreSqlDoesDatabaseExist : IPreLockTest
 {
     private readonly string _connectionString;
 
+    /// <summary>
+    /// Ctor - needs the connection string
+    /// </summary>
+    /// <param name="connectionString"></param>
     public PostgreSqlDoesDatabaseExist(string connectionString)
     {
         _connectionString = connectionString;
     }
 
+    /// <summary>
+    /// Returns true if the PostgreSql database exists
+    /// </summary>
+    /// <returns></returns>
     public ValueTask<bool> CheckLockResourceExistsAsync()
     {
         return CheckLockResourceExists(true);
     }
 
+    /// <summary>
+    /// Returns true if the PostgreSql database exists
+    /// </summary>
+    /// <returns></returns>
     public bool CheckLockResourceExists()
     {
         return CheckLockResourceExists(false).CheckSyncValueTaskWorkedAndReturnResult();
@@ -39,18 +51,13 @@ public class PostgreSqlDoesDatabaseExist : IPreLockTest
         builder.Database = "postgres";
         var newConnectionString = builder.ToString();
 
-        using (NpgsqlConnection conn = new NpgsqlConnection(newConnectionString))
-        {
-            conn.Open();
-            string cmdText = $"SELECT 1 FROM pg_database WHERE datname='{databaseToLookFor}'";
-            using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-            {
-
-                var result = useAsync
-                    ? await cmd.ExecuteScalarAsync()
-                    : cmd.ExecuteNonQuery();
-                return result != null;
-            }
-        }
+        using NpgsqlConnection conn = new NpgsqlConnection(newConnectionString);
+        conn.Open();
+        string cmdText = $"SELECT 1 FROM pg_database WHERE datname='{databaseToLookFor}'";
+        using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn);
+        var result = useAsync
+            ? await cmd.ExecuteScalarAsync()
+            : cmd.ExecuteNonQuery();
+        return result != null;
     }
 }

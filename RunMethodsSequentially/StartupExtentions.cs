@@ -7,6 +7,10 @@ using RunMethodsSequentially.LockAndRunCode;
 
 namespace RunMethodsSequentially
 {
+    /// <summary>
+    /// This contains the extension methods to register the code that will obtain a global lock
+    /// and then run the services that you have registered with the <see cref="RegisterServiceToRunInJob"/>
+    /// </summary>
     public static class StartupExtensions
     {
         /// <summary>
