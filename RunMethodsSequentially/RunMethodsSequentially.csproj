@@ -6,14 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock" Version="2.2.0" />
-    <PackageReference Include="DistributedLock.FileSystem" Version="1.0.0" />
-    <PackageReference Include="DistributedLock.Postgres" Version="1.0.1" />
+    <PackageReference Include="DistributedLock" Version="2.3.0" />
+    <PackageReference Include="DistributedLock.FileSystem" Version="1.0.1" />
+    <PackageReference Include="DistributedLock.Postgres" Version="1.0.2" />
     <PackageReference Include="DistributedLock.SqlServer" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-    <PackageReference Include="Npgsql" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Npgsql" Version="6.0.4" />
   </ItemGroup>
 
 	<PropertyGroup>
