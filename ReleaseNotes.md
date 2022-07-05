@@ -1,5 +1,10 @@
 # Release Notes
 
+## 1.4.0
+
+
+- Updated DistributedLock versions - thanks to GitHub @idan-h
+
 ## 1.3.0
 
 - New Feature: Added a class to test that your startup code will run properly

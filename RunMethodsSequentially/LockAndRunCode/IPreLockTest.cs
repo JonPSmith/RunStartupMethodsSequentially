@@ -11,5 +11,6 @@ namespace RunMethodsSequentially.LockAndRunCode
     public interface IPreLockTest
     {
         ValueTask<bool> CheckLockResourceExistsAsync();
+        bool CheckLockResourceExists();
     }
 }

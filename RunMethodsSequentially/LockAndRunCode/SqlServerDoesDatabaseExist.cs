@@ -18,20 +18,33 @@ namespace RunMethodsSequentially.LockAndRunCode
             _connectionString = connectionString;
         }
 
-        public async ValueTask<bool> CheckLockResourceExistsAsync()
+        public ValueTask<bool> CheckLockResourceExistsAsync()
+        {
+            return CheckLockResourceExists(true);
+        }
+
+        public bool CheckLockResourceExists()
+        {
+            return CheckLockResourceExists(false).CheckSyncValueTaskWorkedAndReturnResult();
+        }
+
+        //--------------------------------------------------------------
+        //private methods
+
+        private async ValueTask<bool> CheckLockResourceExists(bool useAsync)
         {
             var builder = new SqlConnectionStringBuilder(_connectionString);
             var databaseName = builder.InitialCatalog;
             builder.InitialCatalog = "";
             var newConnectionString = builder.ToString();
 
-            using (var myConn = new SqlConnection(newConnectionString))
-            {
-                var command = $"SELECT COUNT(*) FROM sys.databases WHERE [Name] = '{databaseName}'";
-                var myCommand = new SqlCommand(command, myConn);
-                myConn.Open();
-                return ((int)await myCommand.ExecuteScalarAsync()) == 1;
-            }
+            using var myConn = new SqlConnection(newConnectionString);
+            var command = $"SELECT COUNT(*) FROM sys.databases WHERE [Name] = '{databaseName}'";
+            var myCommand = new SqlCommand(command, myConn);
+            myConn.Open();
+            return useAsync
+                ? ((int)await myCommand.ExecuteScalarAsync()) == 1
+                : ((int)myCommand.ExecuteScalar()) == 1;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace WebSiteRunSequentially.StartupServices
             {
                 commonEntity.Name = "Updated";
                 commonEntity.DateTimeUtc = startTime;
-                commonEntity.Stage = commonEntity.Stage + 1;
+                commonEntity.Stage++;
                 context.Add(new NameDateTime { Name = $"Common entity found. Updated common to Stage to {commonEntity.Stage}", DateTimeUtc = startTime });
             }
 

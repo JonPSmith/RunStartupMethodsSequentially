@@ -26,7 +26,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             ResourceName = $"PostgreSQL database with name [{connectionString.GetDatabaseNameFromPostgreSqlConnectionString()}]";
         }
 
-        public async Task LockAndRunMethodsAsync(IServiceProvider serviceProvider)
+        public async Task LockAndRunActionAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
@@ -35,6 +35,33 @@ namespace RunMethodsSequentially.LockAndRunCode
                 TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
             {
                 await scopedServices.RunJobAsync();
+            }
+        }
+
+        /// <summary>
+        /// This runs the given async action
+        /// </summary>
+        /// <param name="actionAsync"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async ValueTask LockAndRunActionAsync(Func<ValueTask> actionAsync, RunSequentiallyOptions options)
+        {
+            var distributedLock = new PostgresDistributedLock(new PostgresAdvisoryLockKey(_options.GlobalLockName, allowHashing: true), _connectionString);
+            await using (await distributedLock.AcquireAsync(
+                             TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
+            {
+                await actionAsync();
+            }
+        }
+
+        public void LockAndRunAction(Action action, RunSequentiallyOptions options)
+        {
+            var distributedLock = new PostgresDistributedLock(new PostgresAdvisoryLockKey(_options.GlobalLockName, allowHashing: true), _connectionString);
+            using (distributedLock.Acquire(
+                             TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
+            {
+                action();
             }
         }
     }

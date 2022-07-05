@@ -22,6 +22,10 @@ namespace RunMethodsSequentially.LockAndRunCode
         /// </summary>
         /// <param name="serviceProvider"></param>
         /// <returns></returns>
-        Task LockAndRunMethodsAsync(IServiceProvider serviceProvider);
+        Task LockAndRunActionAsync(IServiceProvider serviceProvider);
+
+        ValueTask LockAndRunActionAsync(Func<ValueTask> actionAsync, RunSequentiallyOptions options);
+
+        void LockAndRunAction(Action action, RunSequentiallyOptions options);
     }
 }

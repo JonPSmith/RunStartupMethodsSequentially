@@ -22,5 +22,10 @@ namespace RunMethodsSequentially.LockAndRunCode
         {
             return new ValueTask<bool>(Directory.Exists(_directoryFilePath));
         }
+
+        public bool CheckLockResourceExists()
+        {
+            return Directory.Exists(_directoryFilePath);
+        }
     }
 }

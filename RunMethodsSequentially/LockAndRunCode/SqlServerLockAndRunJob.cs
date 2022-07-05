@@ -26,7 +26,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             ResourceName = $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]";
         }
 
-        public async Task LockAndRunMethodsAsync(IServiceProvider serviceProvider)
+        public async Task LockAndRunActionAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
@@ -36,7 +36,32 @@ namespace RunMethodsSequentially.LockAndRunCode
             {
                 await scopedServices.RunJobAsync();
             }
+        }
 
+        /// <summary>
+        /// This runs the given async action
+        /// </summary>
+        /// <param name="actionAsync"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async ValueTask LockAndRunActionAsync(Func<ValueTask> actionAsync, RunSequentiallyOptions options)
+        {
+            var distributedLock = new SqlDistributedLock(_options.GlobalLockName, _connectionString);
+            await using (await distributedLock.AcquireAsync(
+                             TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
+            {
+                await actionAsync();
+            }
+        }
+
+        public void LockAndRunAction(Action action, RunSequentiallyOptions options)
+        {
+            var distributedLock = new SqlDistributedLock(_options.GlobalLockName, _connectionString);
+            using (distributedLock.Acquire(
+                             TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
+            {
+                action();
+            }
         }
     }
 }

@@ -11,5 +11,10 @@ namespace RunMethodsSequentially.LockAndRunCode
         {
             return new ValueTask<bool>(true);
         }
+
+        public bool CheckLockResourceExists()
+        {
+            return true;
+        }
     }
 }

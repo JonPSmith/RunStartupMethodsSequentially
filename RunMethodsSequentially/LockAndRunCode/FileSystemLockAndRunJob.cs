@@ -27,7 +27,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             ResourceName = $"Looking for directory at {directoryFilePath}";
         }
 
-        public async Task LockAndRunMethodsAsync(IServiceProvider serviceProvider)
+        public async Task LockAndRunActionAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var scopedServices = scope.ServiceProvider;
@@ -38,7 +38,35 @@ namespace RunMethodsSequentially.LockAndRunCode
             {
                 await scopedServices.RunJobAsync();
             }
+        }
 
+        /// <summary>
+        /// This runs the given async action
+        /// </summary>
+        /// <param name="actionAsync"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async ValueTask LockAndRunActionAsync(Func<ValueTask> actionAsync, RunSequentiallyOptions options)
+        {
+            var lockFileDirectory = new DirectoryInfo(_directoryFilePath);
+            var distributedLock = new FileDistributedLock(lockFileDirectory, _options.GlobalLockName);
+            await using (await distributedLock.AcquireAsync(
+                             TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
+            {
+                await actionAsync(); 
+            }
+        }
+
+        public void LockAndRunAction(Action action, RunSequentiallyOptions options)
+        {
+            var lockFileDirectory = new DirectoryInfo(_directoryFilePath);
+            var distributedLock = new FileDistributedLock(lockFileDirectory, _options.GlobalLockName);
+            using (distributedLock.Acquire(
+                             TimeSpan.FromSeconds(_options.DefaultLockTimeoutInSeconds)))
+            {
+                action();
+            }
         }
     }
 }

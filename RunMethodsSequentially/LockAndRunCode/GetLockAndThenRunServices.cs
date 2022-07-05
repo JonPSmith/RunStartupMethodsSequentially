@@ -48,7 +48,7 @@ namespace RunMethodsSequentially.LockAndRunCode
                     logger.LogInformation("The {0} exists and will be locked.", lockVersion.LockAndRunClass.ResourceName);
 
                     //The resource to lock on is there, so lock and run the methods and exit
-                    await lockVersion.LockAndRunClass.LockAndRunMethodsAsync(scopedServices);
+                    await lockVersion.LockAndRunClass.LockAndRunActionAsync(scopedServices);
                     return true;
                 }
                 //else resource wasn't available so try another lock version
