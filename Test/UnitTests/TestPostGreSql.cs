@@ -38,7 +38,7 @@ namespace Test.UnitTests
             var connectionString = context.Database.GetConnectionString();
 
             //VERIFY
-            connectionString.ShouldEqual("Host=127.0.0.1;Database=DatabaseTest_TestPostgreSql;Username=postgres;Password=LetMeIn");
+            connectionString.ShouldEqual("Host=127.0.0.1;Database=RunSequentiallyTest_TestPostgreSql;Username=postgres;Password=LetMeIn");
         }
 
         [Fact]

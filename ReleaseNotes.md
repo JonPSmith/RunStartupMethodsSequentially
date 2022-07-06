@@ -1,8 +1,8 @@
 # Release Notes
 
-## 1.4.0
+## 2.0.0
 
-
+- New LockAndRunNow feature that allows you to run an action within global lock 
 - Updated DistributedLock versions - thanks to GitHub @idan-h
 
 ## 1.3.0

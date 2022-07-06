@@ -18,7 +18,7 @@ public static class LockAndRunNow
     /// <param name="yourActionAsync"></param>
     /// <param name="optionsAction"></param>
     /// <returns></returns>
-    public static async ValueTask RunActionAsync(Func<ValueTask> yourActionAsync, Action<RunSequentiallyOptions> optionsAction = null)
+    public static async ValueTask RunActionInLockAsync(Func<ValueTask> yourActionAsync, Action<RunSequentiallyOptions> optionsAction = null)
     {
         var options = new RunSequentiallyOptions(null);
         optionsAction?.Invoke(options);
@@ -41,7 +41,7 @@ public static class LockAndRunNow
     /// </summary>
     /// <param name="yourAction"></param>
     /// <param name="optionsAction"></param>
-    public static void RunAction(Action yourAction, Action<RunSequentiallyOptions> optionsAction = null)
+    public static void RunActionInLock(Action yourAction, Action<RunSequentiallyOptions> optionsAction = null)
     {
         var options = new RunSequentiallyOptions(null);
         optionsAction?.Invoke(options);
