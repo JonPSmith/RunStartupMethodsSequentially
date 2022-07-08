@@ -22,13 +22,9 @@ public class TestLockAndRunNowSqlServer
         context.Database.EnsureClean();
 
         var hasRun = false;
-        void MyAction()
-        {
-            hasRun = true;
-        }
 
         //ATTEMPT
-        LockAndRunNow.RunActionInLock(MyAction, options =>
+        LockAndRunNow.RunActionInLock(() => { hasRun = true; }, options =>
         {
             options.AddSqlServerLockAndRunMethods(context.Database.GetConnectionString());
         });
@@ -46,14 +42,11 @@ public class TestLockAndRunNowSqlServer
         context.Database.EnsureClean();
 
         var hasRun = false;
-        ValueTask MyAction()
-        {
-            hasRun = true;
-            return ValueTask.CompletedTask;
-        }
-        
+
         //ATTEMPT
-        await LockAndRunNow.RunActionInLockAsync(MyAction, options =>
+        await LockAndRunNow.RunActionInLockAsync(() => { hasRun = true;
+            return ValueTask.CompletedTask;
+        }, options =>
         {
             options.AddSqlServerLockAndRunMethods(context.Database.GetConnectionString());
         });
