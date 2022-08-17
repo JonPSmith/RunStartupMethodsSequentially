@@ -1,5 +1,9 @@
 # Release Notes
 
+## 1.3.1 
+
+- Update of various NuGet packages, especially the DistributedLock packages that fixes some problems 
+
 ## 1.3.0
 
 - New Feature: Added a class to test that your startup code will run properly
