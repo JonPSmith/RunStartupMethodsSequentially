@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.0.0
+
+- Changed framework to netstandard2.1 to work with any version of .NET
+
 ## 1.3.1 
 
 - Update of various NuGet packages, especially the DistributedLock packages that fixes some problems 
