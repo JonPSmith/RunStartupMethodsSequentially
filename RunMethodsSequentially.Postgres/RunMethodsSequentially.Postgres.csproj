@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DistributedLock.Postgres" Version="1.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RunMethodsSequentially\RunMethodsSequentially.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Net.RunMethodsSequentially.Postgres</PackageId>
+    <PackageVersion>2.0.0</PackageVersion>
+    <Authors>Jon P Smith</Authors>
+    <Description>Runs updates to single resources, e.g. a database, on startup of an application that has multiple instances</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>
+      Changed framework to netstandard2.1 to work with any version of .NET
+    </PackageReleaseNotes>
+    <Copyright>Copyright (c) 2021 Jon P Smith. Licenced under MIT licence</Copyright>
+    <PackageTags>Entity Framework Core, ASP.NET Core</PackageTags>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <ProjectUrl>https://github.com/JonPSmith/RunStartupMethodsSequentially</ProjectUrl>
+    <RepositoryUrl>https://github.com/JonPSmith/RunStartupMethodsSequentially</RepositoryUrl>
+    <PackageIcon>RunMethodsSequentiallyNuGetIcon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\RunMethodsSequentially\RunMethodsSequentiallyNuGetIcon.png" Link="RunMethodsSequentiallyNuGetIcon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

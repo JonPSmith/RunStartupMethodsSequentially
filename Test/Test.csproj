@@ -23,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RunMethodsSequentially.FileSystem\RunMethodsSequentially.FileSystem.csproj" />
+    <ProjectReference Include="..\RunMethodsSequentially.Postgres\RunMethodsSequentially.Postgres.csproj" />
+    <ProjectReference Include="..\RunMethodsSequentially.SqlServer\RunMethodsSequentially.SqlServer.csproj" />
     <ProjectReference Include="..\RunMethodsSequentially\RunMethodsSequentially.csproj" />
     <ProjectReference Include="..\WebSiteRunSequentially\WebSiteRunSequentially.csproj" />
   </ItemGroup>

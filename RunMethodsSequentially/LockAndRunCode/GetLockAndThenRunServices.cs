@@ -40,7 +40,7 @@ namespace RunMethodsSequentially.LockAndRunCode
             if (!options.LockVersionsInOrder.Any())
                 throw new RunSequentiallyException(
                     $"You must register at least one lock service when registering {nameof(StartupExtensions.RegisterRunMethodsSequentially)}, " +
-                    $"for instance services.{nameof(StartupExtensions.RegisterRunMethodsSequentially)}(options => options.{nameof(StartupExtensions.AddSqlServerLockAndRunMethods)}(connectionString))...");
+                    $"for instance services.{nameof(StartupExtensions.RegisterRunMethodsSequentially)}(options => options.AddSqlServerLockAndRunMethods(connectionString))...");
             foreach (var lockVersion in options.LockVersionsInOrder)
             {        
                 if (await lockVersion.PreLockCheck.CheckLockResourceExistsAsync())
