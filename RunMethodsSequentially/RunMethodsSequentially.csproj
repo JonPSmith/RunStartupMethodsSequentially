@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock" Version="2.3.2" />
+    <PackageReference Include="DistributedLock" Version="2.3.4" />
     <PackageReference Include="DistributedLock.FileSystem" Version="1.0.1" />
-    <PackageReference Include="DistributedLock.Postgres" Version="1.0.4" />
-    <PackageReference Include="DistributedLock.SqlServer" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
+    <PackageReference Include="DistributedLock.Postgres" Version="1.0.5" />
+    <PackageReference Include="DistributedLock.SqlServer" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
     <PackageReference Include="Npgsql" Version="6.0.6" />
@@ -18,12 +18,13 @@
 
 	<PropertyGroup>
 		<PackageId>Net.RunMethodsSequentially</PackageId>
-		<PackageVersion>2.0.0</PackageVersion>
+		<PackageVersion>2.0.1</PackageVersion>
 		<Authors>Jon P Smith</Authors>
 		<Description>Runs updates to single resources, e.g. a database, on startup of an application that has multiple instances</Description>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageReleaseNotes>
-			Changed framework to netstandard2.1 to work with any version of .NET
+			- Microsoft.Data.SqlClient updated to because of vulnerable in current version
+			- Updated DistributedLock parts to fix the .NET 8 Postgres bug - see https://github.com/npgsql/npgsql/issues/5143
 		</PackageReleaseNotes>
 		<Copyright>Copyright (c) 2021 Jon P Smith. Licenced under MIT licence</Copyright>
 		<PackageTags>Entity Framework Core, ASP.NET Core</PackageTags>

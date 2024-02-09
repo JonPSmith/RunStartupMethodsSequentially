@@ -1,5 +1,10 @@
 # Release Notes
 
+## 2.0.1
+
+- Microsoft.Data.SqlClient updated to because of vulnerable in current version
+- Updated DistributedLock parts to fix the .NET 8 Postgres bug - see https://github.com/npgsql/npgsql/issues/5143
+
 ## 2.0.0
 
 - Changed framework to netstandard2.1 to work with any version of .NET
