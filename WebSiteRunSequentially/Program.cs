@@ -21,6 +21,7 @@ builder.Services.RegisterRunMethodsSequentially(options =>
         options.AddFileSystemLockAndRunMethods(lockFolder);
     })
     .RegisterServiceToRunInJob<StartupServiceEnsureCreated>()
+    //.RegisterServiceToRunInJob<StartupServiceThrowException>() //Checks that an Exception will stop the application. 
     .RegisterServiceToRunInJob<StartupServiceSeedDatabase>();
 
 var app = builder.Build();
