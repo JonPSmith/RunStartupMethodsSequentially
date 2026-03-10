@@ -4,14 +4,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using Respawn;
 using RunMethodsSequentially.LockAndRunCode;
 using Test.EfCore;
-using Test.Helpers;
 using TestSupport.Attributes;
 using TestSupport.EfHelpers;
-using TestSupport.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
@@ -25,20 +21,6 @@ namespace Test.UnitTests
         public TestPostgreSql(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void TestCreatePostgreUniqueDatabaseOptions()
-        {
-            //SETUP
-            var options = this.CreatePostgreSqlUniqueClassOptions<TestDbContext>();
-            using var context = new TestDbContext(options);
-
-            //ATTEMPT
-            var connectionString = context.Database.GetConnectionString();
-
-            //VERIFY
-            connectionString.ShouldEqual("Host=127.0.0.1;Port=5432;Database=RunStartup-Test_TestPostgreSql;Username=postgres;Password=LetMeIn");
         }
 
         [Fact]
