@@ -49,8 +49,8 @@ namespace Test.UnitTests
             options.LockVersionsInOrder.Count.ShouldEqual(2);
             options.LockVersionsInOrder.First().LockAndRunClass.ResourceName.ShouldEqual(
                 $"SQL Server database with name [{connectionString.GetDatabaseNameFromSqlServerConnectionString()}]");
-            options.LockVersionsInOrder.Last().LockAndRunClass.ResourceName.ShouldEqual(
-                @"Looking for directory at C:\Users\JonPSmith\source\repos\RunStartupMethodsSequentially\Test\TestData");
+            options.LockVersionsInOrder.Last().LockAndRunClass.ResourceName.ShouldContain(
+                @"TestData");
             serviceProvider.GetService<IHostedService>().ShouldNotBeNull();
         }
 
